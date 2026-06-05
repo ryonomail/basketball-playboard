@@ -3,6 +3,7 @@ import SwiftUI
 struct PlayerMarkerView: View {
     let player: Player
     let isSelected: Bool
+    var onRotate: ((Double) -> Void)? = nil
 
     private var teamColor: Color {
         player.team == .home ? .blue : .red
@@ -10,15 +11,26 @@ struct PlayerMarkerView: View {
 
     var body: some View {
         ZStack {
-            // Vision cone
+            // Vision cone - draggable to rotate
             VisionCone()
                 .fill(teamColor.opacity(0.18))
                 .frame(width: 60, height: 50)
                 .offset(y: -30)
                 .rotationEffect(.radians(player.facing))
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            // Calculate angle from center of player to drag point
+                            let dx = value.location.x - 30 // cone frame is 60 wide, center at 30
+                            // The drag location is relative to the cone's frame, but we need
+                            // to account for the cone being offset and rotated.
+                            // Simpler: use the startLocation + translation to get position
+                            // relative to the gesture view's original center
+                        }
+                )
+                // Actually, let's use a gesture on the outer area instead
 
             VStack(spacing: -2) {
-                // Head
                 Circle()
                     .fill(teamColor)
                     .frame(width: 16, height: 16)
@@ -26,7 +38,6 @@ struct PlayerMarkerView: View {
                         Circle().stroke(isSelected ? Color.yellow : Color.white, lineWidth: isSelected ? 2.5 : 1)
                     )
 
-                // Body
                 PawnBody()
                     .fill(teamColor)
                     .frame(width: 24, height: 18)
@@ -42,6 +53,36 @@ struct PlayerMarkerView: View {
             }
             .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
         }
+        .frame(width: 80, height: 80)
+        .contentShape(Circle().size(width: 80, height: 80))
+    }
+}
+
+struct RotatablePlayerView: View {
+    let player: Player
+    let isSelected: Bool
+    let screenPosition: CGPoint
+    var onRotate: ((Double) -> Void)? = nil
+
+    var body: some View {
+        PlayerMarkerView(player: player, isSelected: isSelected)
+            .position(screenPosition)
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 5)
+                    .onChanged { value in
+                        // If drag started far from center (in the cone area), treat as rotation
+                        let startFromCenter = hypot(
+                            value.startLocation.x - screenPosition.x,
+                            value.startLocation.y - screenPosition.y
+                        )
+                        if startFromCenter > 15 {
+                            let dx = value.location.x - screenPosition.x
+                            let dy = value.location.y - screenPosition.y
+                            let angle = atan2(dx, -dy) // 0 = up, clockwise positive
+                            onRotate?(angle)
+                        }
+                    }
+            )
     }
 }
 
@@ -50,19 +91,15 @@ struct VisionCone: Shape {
         var path = Path()
         let cx = rect.midX
         let bottom = rect.maxY
-        let spreadAngle: CGFloat = .pi / 3 // 60 degree cone
+        let spread: CGFloat = .pi / 3
         let length = rect.height
 
         path.move(to: CGPoint(x: cx, y: bottom))
-        path.addLine(to: CGPoint(
-            x: cx + length * sin(spreadAngle / 2),
-            y: bottom - length * cos(spreadAngle / 2)
-        ))
         path.addArc(
             center: CGPoint(x: cx, y: bottom),
             radius: length,
-            startAngle: .radians(-.pi / 2 + Double(spreadAngle / 2)),
-            endAngle: .radians(-.pi / 2 - Double(spreadAngle / 2)),
+            startAngle: .radians(Double(-CGFloat.pi / 2 + spread / 2)),
+            endAngle: .radians(Double(-CGFloat.pi / 2 - spread / 2)),
             clockwise: true
         )
         path.closeSubpath()
@@ -95,7 +132,6 @@ struct BallView: View {
 
     var body: some View {
         ZStack {
-            // Ball body
             Circle()
                 .fill(
                     RadialGradient(
@@ -107,7 +143,6 @@ struct BallView: View {
                 )
                 .frame(width: 22, height: 22)
 
-            // Seam lines
             Canvas { context, size in
                 let cx = size.width / 2
                 let cy = size.height / 2
@@ -115,19 +150,16 @@ struct BallView: View {
                 let style = StrokeStyle(lineWidth: 0.8, lineCap: .round)
                 let color: Color = .black.opacity(0.45)
 
-                // Vertical seam
                 var vLine = Path()
                 vLine.move(to: CGPoint(x: cx, y: cy - r))
                 vLine.addLine(to: CGPoint(x: cx, y: cy + r))
                 context.stroke(vLine, with: .color(color), style: style)
 
-                // Horizontal seam
                 var hLine = Path()
                 hLine.move(to: CGPoint(x: cx - r, y: cy))
                 hLine.addLine(to: CGPoint(x: cx + r, y: cy))
                 context.stroke(hLine, with: .color(color), style: style)
 
-                // Left curve
                 var leftCurve = Path()
                 leftCurve.move(to: CGPoint(x: cx - r * 0.45, y: cy - r))
                 leftCurve.addQuadCurve(
@@ -136,7 +168,6 @@ struct BallView: View {
                 )
                 context.stroke(leftCurve, with: .color(color), style: style)
 
-                // Right curve
                 var rightCurve = Path()
                 rightCurve.move(to: CGPoint(x: cx + r * 0.45, y: cy - r))
                 rightCurve.addQuadCurve(
@@ -147,7 +178,6 @@ struct BallView: View {
             }
             .frame(width: 22, height: 22)
 
-            // Selection ring
             if isSelected {
                 Circle()
                     .stroke(Color.yellow, lineWidth: 2.5)

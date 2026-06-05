@@ -163,11 +163,17 @@ struct CourtEditorView: View {
 
                 // Players
                 ForEach(players) { player in
-                    PlayerMarkerView(
+                    let screenPos = courtToScreen(player.position, cs: cs, origin: origin, isPortrait: isPortrait)
+                    RotatablePlayerView(
                         player: player,
-                        isSelected: selectedPlayerID == player.id
+                        isSelected: selectedPlayerID == player.id,
+                        screenPosition: screenPos,
+                        onRotate: { angle in
+                            if let idx = players.firstIndex(where: { $0.id == player.id }) {
+                                players[idx].facing = angle
+                            }
+                        }
                     )
-                    .position(courtToScreen(player.position, cs: cs, origin: origin, isPortrait: isPortrait))
                     .gesture(
                         editorMode == .move ?
                         DragGesture()
@@ -180,14 +186,6 @@ struct CourtEditorView: View {
                             }
                             .onEnded { _ in isTouching = false }
                         : nil
-                    )
-                    .simultaneousGesture(
-                        RotationGesture()
-                            .onChanged { angle in
-                                if let idx = players.firstIndex(where: { $0.id == player.id }) {
-                                    players[idx].facing = angle.radians
-                                }
-                            }
                     )
                     .onLongPressGesture {
                         editingPlayerID = player.id
