@@ -303,11 +303,16 @@ struct CourtEditorView: View {
     }
 
     private var courtModeToggle: some View {
-        Picker("", selection: $courtMode) {
-            ForEach(CourtMode.allCases, id: \.self) { Text($0.displayName).tag($0) }
+        Button {
+            courtMode = courtMode == .half ? .full : .half
+        } label: {
+            Text(courtMode == .half ? "ハーフ" : "フル")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(.primary)
+                .frame(width: 44, height: 34)
+                .background(.ultraThinMaterial)
+                .cornerRadius(8)
         }
-        .pickerStyle(.segmented)
-        .frame(width: 100)
     }
 
     private func modeBtn(_ icon: String, mode: EditorMode) -> some View {
