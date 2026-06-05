@@ -9,7 +9,7 @@ enum EditorMode: String {
 struct CourtEditorView: View {
     @EnvironmentObject var playStore: PlayStore
 
-    @State private var players: [Player] = Formation.allPlayers()
+    @State private var players: [Player] = Formation.allPlayers(for: .half)
     @State private var ball: Ball = Ball()
     @State private var lines: [DrawingLine] = []
     @State private var courtMode: CourtMode = .half
@@ -359,7 +359,11 @@ struct CourtEditorView: View {
 
     private var courtModeToggle: some View {
         Button {
-            courtMode = courtMode == .half ? .full : .half
+            let newMode: CourtMode = courtMode == .half ? .full : .half
+            courtMode = newMode
+            players = Formation.allPlayers(for: newMode)
+            ball = Ball()
+            lines = []
         } label: {
             Text(courtMode == .half ? "ハーフ" : "フル")
                 .font(.system(size: 12, weight: .semibold))
@@ -452,7 +456,7 @@ struct CourtEditorView: View {
     }
 
     private func resetBoard() {
-        players = Formation.allPlayers()
+        players = Formation.allPlayers(for: courtMode)
         ball = Ball()
         lines = []
         selectedPlayerID = nil
