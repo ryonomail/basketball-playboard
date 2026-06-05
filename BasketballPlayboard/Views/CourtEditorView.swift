@@ -1,49 +1,34 @@
 import SwiftUI
 
-enum EditorMode {
+enum EditorMode: String {
     case move
     case draw
 }
 
 struct CourtEditorView: View {
     @EnvironmentObject var playStore: PlayStore
-    @State var play: Play
-    @State private var currentFrameIndex = 0
+
+    @State private var players: [Player] = Formation.allPlayers()
+    @State private var ball: Ball = Ball()
+    @State private var lines: [DrawingLine] = []
+    @State private var courtMode: CourtMode = .half
     @State private var editorMode: EditorMode = .move
     @State private var selectedLineType: LineType = .cut
+    @State private var selectedLineColor: LineColor = .black
+    @State private var currentDrawing: DrawingLine? = nil
     @State private var selectedPlayerID: UUID? = nil
-    @State private var currentDrawingLine: DrawingLine? = nil
+    @State private var draggingBall = false
     @State private var editingPlayerID: UUID? = nil
     @State private var editingNumber: String = ""
-    @State private var showPlayback = false
-
-    private var currentFrame: PlayFrame {
-        guard play.frames.indices.contains(currentFrameIndex) else {
-            return PlayFrame(players: [])
-        }
-        return play.frames[currentFrameIndex]
-    }
+    @State private var showSaveSheet = false
+    @State private var showLoadSheet = false
+    @State private var saveName: String = ""
 
     var body: some View {
         VStack(spacing: 0) {
+            topBar
             courtArea
-            toolbar
-            frameBar
-        }
-        .navigationTitle(play.name)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showPlayback = true
-                } label: {
-                    Image(systemName: "play.circle")
-                }
-                .disabled(play.frames.count < 2)
-            }
-        }
-        .sheet(isPresented: $showPlayback) {
-            PlaybackView(play: play)
+            toolBar
         }
         .alert("背番号を変更", isPresented: Binding(
             get: { editingPlayerID != nil },
@@ -51,54 +36,109 @@ struct CourtEditorView: View {
         )) {
             TextField("番号", text: $editingNumber)
                 .keyboardType(.numberPad)
-            Button("OK") {
-                if let pid = editingPlayerID,
-                   let fi = play.frames.indices.first(where: { $0 == currentFrameIndex }),
-                   let pi = play.frames[fi].players.firstIndex(where: { $0.id == pid }) {
-                    play.frames[fi].players[pi].number = editingNumber
-                    playStore.updatePlay(play)
-                }
-                editingPlayerID = nil
-            }
+            Button("OK") { applyNumberEdit() }
             Button("キャンセル", role: .cancel) { editingPlayerID = nil }
         }
+        .sheet(isPresented: $showSaveSheet) { saveSheet }
+        .sheet(isPresented: $showLoadSheet) { loadSheet }
     }
+
+    // MARK: - Top Bar
+
+    private var topBar: some View {
+        HStack(spacing: 12) {
+            Button { showSaveSheet = true } label: {
+                Image(systemName: "square.and.arrow.down")
+            }
+            Button { showLoadSheet = true } label: {
+                Image(systemName: "folder")
+            }
+
+            Spacer()
+
+            Picker("コート", selection: $courtMode) {
+                ForEach(CourtMode.allCases, id: \.self) { mode in
+                    Text(mode.displayName).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .frame(width: 130)
+
+            Spacer()
+
+            Button {
+                if !lines.isEmpty { lines.removeLast() }
+            } label: {
+                Image(systemName: "arrow.uturn.backward")
+            }
+            .disabled(lines.isEmpty)
+
+            Button { resetBoard() } label: {
+                Image(systemName: "trash")
+                    .foregroundColor(.red)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(Color(.systemGray6))
+    }
+
+    // MARK: - Court
 
     private var courtArea: some View {
         GeometryReader { geo in
-            let courtSize = courtSize(in: geo.size)
-            let courtOrigin = CGPoint(
-                x: (geo.size.width - courtSize.width) / 2,
-                y: (geo.size.height - courtSize.height) / 2
+            let cs = courtSize(in: geo.size)
+            let origin = CGPoint(
+                x: (geo.size.width - cs.width) / 2,
+                y: (geo.size.height - cs.height) / 2
             )
 
             ZStack {
-                Color.white
+                Color(.systemGray5)
+
+                // White court background
+                Rectangle()
+                    .fill(Color.white)
+                    .frame(width: cs.width, height: cs.height)
+                    .position(x: geo.size.width / 2, y: geo.size.height / 2)
 
                 // Court lines
-                CourtRenderer()
+                CourtRenderer(mode: courtMode)
                     .stroke(Color.black, lineWidth: 1.5)
-                    .frame(width: courtSize.width, height: courtSize.height)
+                    .frame(width: cs.width, height: cs.height)
                     .position(x: geo.size.width / 2, y: geo.size.height / 2)
 
                 // Drawn lines
-                LineDrawingView(lines: currentFrame.lines)
-                    .frame(width: courtSize.width, height: courtSize.height)
+                LineDrawingView(lines: lines)
+                    .frame(width: cs.width, height: cs.height)
                     .position(x: geo.size.width / 2, y: geo.size.height / 2)
 
-                // Current drawing line
-                if let drawingLine = currentDrawingLine {
-                    LineDrawingView(lines: [drawingLine])
-                        .frame(width: courtSize.width, height: courtSize.height)
+                // Current drawing
+                if let drawing = currentDrawing {
+                    LineDrawingView(lines: [drawing])
+                        .frame(width: cs.width, height: cs.height)
                         .position(x: geo.size.width / 2, y: geo.size.height / 2)
                 }
 
-                // Player markers
-                ForEach(currentFrame.players) { player in
-                    let pos = CGPoint(
-                        x: courtOrigin.x + player.position.x * courtSize.width,
-                        y: courtOrigin.y + player.position.y * courtSize.height
+                // Ball
+                BallView(isSelected: draggingBall)
+                    .position(
+                        x: origin.x + ball.position.x * cs.width,
+                        y: origin.y + ball.position.y * cs.height
                     )
+                    .gesture(
+                        editorMode == .move ?
+                        DragGesture()
+                            .onChanged { v in
+                                draggingBall = true
+                                ball.position = clampedNorm(v.location, origin: origin, size: cs)
+                            }
+                            .onEnded { _ in draggingBall = false }
+                        : nil
+                    )
+
+                // Players
+                ForEach(players) { player in
                     PlayerMarkerView(
                         player: player,
                         isSelected: selectedPlayerID == player.id,
@@ -107,23 +147,20 @@ struct CourtEditorView: View {
                             editingNumber = player.number
                         }
                     )
-                    .position(pos)
+                    .position(
+                        x: origin.x + player.position.x * cs.width,
+                        y: origin.y + player.position.y * cs.height
+                    )
                     .gesture(
                         editorMode == .move ?
                         DragGesture()
-                            .onChanged { value in
+                            .onChanged { v in
                                 selectedPlayerID = player.id
-                                updatePlayerPosition(
-                                    playerID: player.id,
-                                    to: CGPoint(
-                                        x: (value.location.x - courtOrigin.x) / courtSize.width,
-                                        y: (value.location.y - courtOrigin.y) / courtSize.height
-                                    )
-                                )
+                                if let idx = players.firstIndex(where: { $0.id == player.id }) {
+                                    players[idx].position = clampedNorm(v.location, origin: origin, size: cs)
+                                }
                             }
-                            .onEnded { _ in
-                                playStore.updatePlay(play)
-                            }
+                            .onEnded { _ in }
                         : nil
                     )
                 }
@@ -132,155 +169,181 @@ struct CourtEditorView: View {
             .gesture(
                 editorMode == .draw ?
                 DragGesture(minimumDistance: 1)
-                    .onChanged { value in
-                        let pt = CGPoint(
-                            x: (value.location.x - courtOrigin.x) / courtSize.width,
-                            y: (value.location.y - courtOrigin.y) / courtSize.height
-                        )
-                        if currentDrawingLine == nil {
-                            currentDrawingLine = DrawingLine(type: selectedLineType, points: [pt])
+                    .onChanged { v in
+                        let pt = normalizedPoint(v.location, origin: origin, size: cs)
+                        if currentDrawing == nil {
+                            currentDrawing = DrawingLine(type: selectedLineType, lineColor: selectedLineColor, points: [pt])
                         } else {
-                            currentDrawingLine?.points.append(pt)
+                            currentDrawing?.points.append(pt)
                         }
                     }
                     .onEnded { _ in
-                        if var line = currentDrawingLine, line.points.count >= 2 {
-                            // Simplify the line to reduce points
-                            line.points = simplifyPoints(line.points, tolerance: 0.005)
-                            play.frames[currentFrameIndex].lines.append(line)
-                            playStore.updatePlay(play)
+                        if var line = currentDrawing, line.points.count >= 2 {
+                            line.points = simplify(line.points, tolerance: 0.004)
+                            lines.append(line)
                         }
-                        currentDrawingLine = nil
+                        currentDrawing = nil
                     }
                 : nil
             )
         }
     }
 
-    private var toolbar: some View {
-        HStack(spacing: 16) {
-            // Mode toggle
-            Picker("モード", selection: $editorMode) {
-                Image(systemName: "hand.draw").tag(EditorMode.move)
-                Image(systemName: "pencil.tip").tag(EditorMode.draw)
-            }
-            .pickerStyle(.segmented)
-            .frame(width: 100)
+    // MARK: - Tool Bar
 
-            if editorMode == .draw {
-                Divider().frame(height: 28)
+    private var toolBar: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 12) {
+                Picker("モード", selection: $editorMode) {
+                    Image(systemName: "hand.draw").tag(EditorMode.move)
+                    Image(systemName: "pencil.tip").tag(EditorMode.draw)
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 100)
 
-                ForEach(LineType.allCases, id: \.self) { type in
-                    Button {
-                        selectedLineType = type
-                    } label: {
-                        VStack(spacing: 2) {
-                            Image(systemName: type.iconName)
-                                .font(.system(size: 18))
-                            Text(type.displayName)
-                                .font(.system(size: 9))
+                if editorMode == .draw {
+                    Divider().frame(height: 28)
+
+                    ForEach(LineType.allCases, id: \.self) { type in
+                        Button {
+                            selectedLineType = type
+                        } label: {
+                            VStack(spacing: 2) {
+                                Image(systemName: type.systemImage)
+                                    .font(.system(size: 16))
+                                Text(type.displayName)
+                                    .font(.system(size: 9))
+                            }
+                            .foregroundColor(selectedLineType == type ? .blue : .secondary)
                         }
-                        .foregroundColor(selectedLineType == type ? .blue : .secondary)
+                    }
+
+                    Divider().frame(height: 28)
+
+                    ForEach(LineColor.allCases, id: \.self) { lc in
+                        Circle()
+                            .fill(lc.color)
+                            .frame(width: 22, height: 22)
+                            .overlay(
+                                Circle().stroke(selectedLineColor == lc ? Color.white : Color.clear, lineWidth: 2)
+                            )
+                            .overlay(
+                                Circle().stroke(selectedLineColor == lc ? Color.blue : Color.gray.opacity(0.3), lineWidth: selectedLineColor == lc ? 3 : 1)
+                            )
+                            .onTapGesture { selectedLineColor = lc }
                     }
                 }
 
                 Spacer()
-
-                Button {
-                    if !currentFrame.lines.isEmpty {
-                        play.frames[currentFrameIndex].lines.removeLast()
-                        playStore.updatePlay(play)
-                    }
-                } label: {
-                    Image(systemName: "arrow.uturn.backward")
-                }
-                .disabled(currentFrame.lines.isEmpty)
-            } else {
-                Spacer()
             }
+            .padding(.horizontal, 12)
         }
-        .padding(.horizontal)
         .padding(.vertical, 8)
         .background(Color(.systemGray6))
     }
 
-    private var frameBar: some View {
-        HStack {
-            Text("フレーム \(currentFrameIndex + 1) / \(play.frames.count)")
-                .font(.caption)
+    // MARK: - Save / Load
 
-            Spacer()
-
-            Button {
-                if currentFrameIndex > 0 { currentFrameIndex -= 1 }
-            } label: {
-                Image(systemName: "chevron.left")
+    private var saveSheet: some View {
+        NavigationStack {
+            Form {
+                TextField("プレイ名", text: $saveName)
             }
-            .disabled(currentFrameIndex == 0)
-
-            Button {
-                if currentFrameIndex < play.frames.count - 1 {
-                    currentFrameIndex += 1
+            .navigationTitle("保存")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("キャンセル") { showSaveSheet = false }
                 }
-            } label: {
-                Image(systemName: "chevron.right")
-            }
-            .disabled(currentFrameIndex >= play.frames.count - 1)
-
-            Button {
-                let newFrame = PlayFrame(
-                    players: currentFrame.players,
-                    lines: []
-                )
-                play.frames.insert(newFrame, at: currentFrameIndex + 1)
-                currentFrameIndex += 1
-                playStore.updatePlay(play)
-            } label: {
-                Image(systemName: "plus.circle")
-            }
-
-            Button {
-                if play.frames.count > 1 {
-                    play.frames.remove(at: currentFrameIndex)
-                    if currentFrameIndex >= play.frames.count {
-                        currentFrameIndex = play.frames.count - 1
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("保存") {
+                        let frame = PlayFrame(players: players, ball: ball, lines: lines)
+                        let play = Play(name: saveName.isEmpty ? "プレイ \(playStore.plays.count + 1)" : saveName, frames: [frame])
+                        playStore.save(play)
+                        saveName = ""
+                        showSaveSheet = false
                     }
-                    playStore.updatePlay(play)
                 }
-            } label: {
-                Image(systemName: "trash")
-                    .foregroundColor(.red)
             }
-            .disabled(play.frames.count <= 1)
         }
-        .padding(.horizontal)
-        .padding(.vertical, 8)
-        .background(Color(.systemGray6))
+        .presentationDetents([.medium])
     }
+
+    private var loadSheet: some View {
+        NavigationStack {
+            List {
+                if playStore.plays.isEmpty {
+                    Text("保存されたプレイがありません")
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(playStore.plays) { play in
+                        Button {
+                            if let frame = play.frames.first {
+                                players = frame.players
+                                ball = frame.ball
+                                lines = frame.lines
+                            }
+                            showLoadSheet = false
+                        } label: {
+                            Text(play.name)
+                        }
+                    }
+                    .onDelete { indexSet in
+                        for i in indexSet {
+                            playStore.delete(playStore.plays[i])
+                        }
+                    }
+                }
+            }
+            .navigationTitle("読み込み")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("閉じる") { showLoadSheet = false }
+                }
+            }
+        }
+        .presentationDetents([.medium])
+    }
+
+    // MARK: - Helpers
 
     private func courtSize(in size: CGSize) -> CGSize {
-        let courtAspect: CGFloat = 15.0 / 28.0 // width / height (full court)
-        let availableAspect = size.width / size.height
-        if availableAspect > courtAspect {
-            let h = size.height * 0.95
-            return CGSize(width: h * courtAspect, height: h)
+        let ratio = courtMode.aspectRatio
+        let availableRatio = size.width / size.height
+        if availableRatio > ratio {
+            let h = size.height * 0.94
+            return CGSize(width: h * ratio, height: h)
         } else {
-            let w = size.width * 0.95
-            return CGSize(width: w, height: w / courtAspect)
+            let w = size.width * 0.94
+            return CGSize(width: w, height: w / ratio)
         }
     }
 
-    private func updatePlayerPosition(playerID: UUID, to position: CGPoint) {
-        let clamped = CGPoint(
-            x: max(0, min(1, position.x)),
-            y: max(0, min(1, position.y))
-        )
-        if let index = play.frames[currentFrameIndex].players.firstIndex(where: { $0.id == playerID }) {
-            play.frames[currentFrameIndex].players[index].position = clamped
-        }
+    private func normalizedPoint(_ point: CGPoint, origin: CGPoint, size: CGSize) -> CGPoint {
+        CGPoint(x: (point.x - origin.x) / size.width, y: (point.y - origin.y) / size.height)
     }
 
-    private func simplifyPoints(_ points: [CGPoint], tolerance: CGFloat) -> [CGPoint] {
+    private func clampedNorm(_ point: CGPoint, origin: CGPoint, size: CGSize) -> CGPoint {
+        let n = normalizedPoint(point, origin: origin, size: size)
+        return CGPoint(x: max(0, min(1, n.x)), y: max(0, min(1, n.y)))
+    }
+
+    private func applyNumberEdit() {
+        if let pid = editingPlayerID, let idx = players.firstIndex(where: { $0.id == pid }) {
+            players[idx].number = editingNumber
+        }
+        editingPlayerID = nil
+    }
+
+    private func resetBoard() {
+        players = Formation.allPlayers()
+        ball = Ball()
+        lines = []
+        selectedPlayerID = nil
+    }
+
+    private func simplify(_ points: [CGPoint], tolerance: CGFloat) -> [CGPoint] {
         guard points.count > 3 else { return points }
         var result: [CGPoint] = [points[0]]
         for i in 1..<points.count - 1 {

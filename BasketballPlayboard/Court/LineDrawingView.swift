@@ -7,30 +7,29 @@ struct LineDrawingView: View {
         Canvas { context, size in
             for line in lines {
                 guard line.points.count >= 2 else { continue }
-
-                var path = Path()
-                let pts = line.points
+                let color = line.lineColor.color
+                let pts = line.points.map { CGPoint(x: $0.x * size.width, y: $0.y * size.height) }
 
                 switch line.type {
                 case .cut:
-                    path = smoothPath(points: pts)
-                    context.stroke(path, with: .color(.black), style: StrokeStyle(lineWidth: 2.5))
-                    drawArrowhead(context: context, points: pts, color: .black)
+                    let path = smoothPath(points: pts)
+                    context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                    drawArrowhead(context: context, points: pts, color: color)
 
                 case .pass:
-                    path = smoothPath(points: pts)
-                    context.stroke(path, with: .color(.black), style: StrokeStyle(lineWidth: 2.5, dash: [8, 6]))
-                    drawArrowhead(context: context, points: pts, color: .black)
+                    let path = smoothPath(points: pts)
+                    context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round, dash: [10, 7]))
+                    drawArrowhead(context: context, points: pts, color: color)
 
                 case .dribble:
-                    path = smoothPath(points: pts)
-                    context.stroke(path, with: .color(.black), style: StrokeStyle(lineWidth: 2.5, dash: [2, 4]))
-                    drawArrowhead(context: context, points: pts, color: .black)
+                    let path = smoothPath(points: pts)
+                    context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round, dash: [3, 5]))
+                    drawArrowhead(context: context, points: pts, color: color)
 
                 case .screen:
-                    path = smoothPath(points: pts)
-                    context.stroke(path, with: .color(.black), style: StrokeStyle(lineWidth: 3))
-                    drawScreenEnd(context: context, points: pts)
+                    let path = smoothPath(points: pts)
+                    context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                    drawScreenBar(context: context, points: pts, color: color)
                 }
             }
         }
@@ -43,59 +42,48 @@ struct LineDrawingView: View {
 
         if points.count == 2 {
             path.addLine(to: points[1])
-        } else {
-            for i in 1..<points.count {
-                let mid = CGPoint(
-                    x: (points[i - 1].x + points[i].x) / 2,
-                    y: (points[i - 1].y + points[i].y) / 2
-                )
-                path.addQuadCurve(to: mid, control: points[i - 1])
-            }
-            if let last = points.last {
-                path.addLine(to: last)
-            }
+            return path
+        }
+
+        for i in 1..<points.count {
+            let mid = CGPoint(
+                x: (points[i - 1].x + points[i].x) / 2,
+                y: (points[i - 1].y + points[i].y) / 2
+            )
+            path.addQuadCurve(to: mid, control: points[i - 1])
+        }
+        if let last = points.last {
+            path.addLine(to: last)
         }
         return path
     }
 
     private func drawArrowhead(context: GraphicsContext, points: [CGPoint], color: Color) {
         guard points.count >= 2 else { return }
-        let last = points[points.count - 1]
+        let tip = points.last!
         let prev = points[points.count - 2]
-        let angle = atan2(last.y - prev.y, last.x - prev.x)
-        let arrowLength: CGFloat = 12
-        let arrowAngle: CGFloat = .pi / 6
+        let angle = atan2(tip.y - prev.y, tip.x - prev.x)
+        let len: CGFloat = 12
+        let spread: CGFloat = .pi / 5
 
         var arrow = Path()
-        arrow.move(to: last)
-        arrow.addLine(to: CGPoint(
-            x: last.x - arrowLength * cos(angle - arrowAngle),
-            y: last.y - arrowLength * sin(angle - arrowAngle)
-        ))
-        arrow.move(to: last)
-        arrow.addLine(to: CGPoint(
-            x: last.x - arrowLength * cos(angle + arrowAngle),
-            y: last.y - arrowLength * sin(angle + arrowAngle)
-        ))
+        arrow.move(to: tip)
+        arrow.addLine(to: CGPoint(x: tip.x - len * cos(angle - spread), y: tip.y - len * sin(angle - spread)))
+        arrow.move(to: tip)
+        arrow.addLine(to: CGPoint(x: tip.x - len * cos(angle + spread), y: tip.y - len * sin(angle + spread)))
         context.stroke(arrow, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
     }
 
-    private func drawScreenEnd(context: GraphicsContext, points: [CGPoint]) {
+    private func drawScreenBar(context: GraphicsContext, points: [CGPoint], color: Color) {
         guard points.count >= 2 else { return }
-        let last = points[points.count - 1]
+        let tip = points.last!
         let prev = points[points.count - 2]
-        let angle = atan2(last.y - prev.y, last.x - prev.x)
-        let barLength: CGFloat = 10
+        let angle = atan2(tip.y - prev.y, tip.x - prev.x)
+        let barLen: CGFloat = 10
 
         var bar = Path()
-        bar.move(to: CGPoint(
-            x: last.x - barLength * cos(angle + .pi / 2),
-            y: last.y - barLength * sin(angle + .pi / 2)
-        ))
-        bar.addLine(to: CGPoint(
-            x: last.x + barLength * cos(angle + .pi / 2),
-            y: last.y + barLength * sin(angle + .pi / 2)
-        ))
-        context.stroke(bar, with: .color(.black), style: StrokeStyle(lineWidth: 3, lineCap: .round))
+        bar.move(to: CGPoint(x: tip.x - barLen * cos(angle + .pi / 2), y: tip.y - barLen * sin(angle + .pi / 2)))
+        bar.addLine(to: CGPoint(x: tip.x + barLen * cos(angle + .pi / 2), y: tip.y + barLen * sin(angle + .pi / 2)))
+        context.stroke(bar, with: .color(color), style: StrokeStyle(lineWidth: 3.5, lineCap: .round))
     }
 }

@@ -9,14 +9,12 @@
 /* Begin PBXBuildFile section */
 		0049ECF2C96D21C19365F9BE /* BasketballPlayboardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D1CC036922ABC065E0BA0 /* BasketballPlayboardApp.swift */; };
 		158403CDA12083B81106B834 /* Play.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71CDF3779A2BBFF53B1DCBFC /* Play.swift */; };
-		27A0A191A60EDC2716A74D5F /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D1B07EB7D2484000560916 /* HomeView.swift */; };
 		3E509660BEFAF91A853091CA /* Formation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C84EFE8B5D5170C4B717A7 /* Formation.swift */; };
 		540E3B6C1FB3AF66612218AF /* PlayStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8222573139CB6BC54CD9F2E /* PlayStore.swift */; };
 		83B25B0CA997616A4669E5A1 /* DrawingLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BB693D80B688CC98079666 /* DrawingLine.swift */; };
 		8695CDE39BBA0BBC7C8DDA15 /* CourtRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071E819AF15AA14F8C9904F3 /* CourtRenderer.swift */; };
 		8A58714B04D27BA72918378D /* LineDrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A7CBD47EE1FD5CC9B6D72E0 /* LineDrawingView.swift */; };
 		D1C6ACE83FF339BD694FB7A9 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814DD588312A3FD0DFF278E6 /* Player.swift */; };
-		D3BDBE315F7059A4BA26BA78 /* PlaybackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6B9AC78AE85FF672D04305B /* PlaybackView.swift */; };
 		D4767706DCBAEAA3A5DB4EE6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13A0464536F3A37A055C80CA /* Assets.xcassets */; };
 		D4C0ECF8030B8F9BEBF2C290 /* CourtEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D04C3CAFF91D0F724D218984 /* CourtEditorView.swift */; };
 		E9DA2FEDB1749AD5F864C73F /* PlayerMarkerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A6321FD2C03AA71CDF0885 /* PlayerMarkerView.swift */; };
@@ -31,10 +29,8 @@
 		71CDF3779A2BBFF53B1DCBFC /* Play.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Play.swift; sourceTree = "<group>"; };
 		814DD588312A3FD0DFF278E6 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		9B70D76E3C068E89AFEB2BED /* BasketballPlayboard.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BasketballPlayboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A6B9AC78AE85FF672D04305B /* PlaybackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackView.swift; sourceTree = "<group>"; };
 		B8222573139CB6BC54CD9F2E /* PlayStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayStore.swift; sourceTree = "<group>"; };
 		B8758BEF8FBCF342D22D5F6E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		C6D1B07EB7D2484000560916 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		C89D1CC036922ABC065E0BA0 /* BasketballPlayboardApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketballPlayboardApp.swift; sourceTree = "<group>"; };
 		D04C3CAFF91D0F724D218984 /* CourtEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourtEditorView.swift; sourceTree = "<group>"; };
 		E2BB693D80B688CC98079666 /* DrawingLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingLine.swift; sourceTree = "<group>"; };
@@ -88,8 +84,6 @@
 			isa = PBXGroup;
 			children = (
 				D04C3CAFF91D0F724D218984 /* CourtEditorView.swift */,
-				C6D1B07EB7D2484000560916 /* HomeView.swift */,
-				A6B9AC78AE85FF672D04305B /* PlaybackView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -177,11 +171,9 @@
 				8695CDE39BBA0BBC7C8DDA15 /* CourtRenderer.swift in Sources */,
 				83B25B0CA997616A4669E5A1 /* DrawingLine.swift in Sources */,
 				3E509660BEFAF91A853091CA /* Formation.swift in Sources */,
-				27A0A191A60EDC2716A74D5F /* HomeView.swift in Sources */,
 				8A58714B04D27BA72918378D /* LineDrawingView.swift in Sources */,
 				158403CDA12083B81106B834 /* Play.swift in Sources */,
 				540E3B6C1FB3AF66612218AF /* PlayStore.swift in Sources */,
-				D3BDBE315F7059A4BA26BA78 /* PlaybackView.swift in Sources */,
 				D1C6ACE83FF339BD694FB7A9 /* Player.swift in Sources */,
 				E9DA2FEDB1749AD5F864C73F /* PlayerMarkerView.swift in Sources */,
 			);
@@ -241,7 +233,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -340,7 +332,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

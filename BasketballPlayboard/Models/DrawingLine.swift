@@ -1,5 +1,6 @@
 import Foundation
 import CoreGraphics
+import SwiftUI
 
 enum LineType: String, Codable, CaseIterable {
     case cut
@@ -16,7 +17,7 @@ enum LineType: String, Codable, CaseIterable {
         }
     }
 
-    var iconName: String {
+    var systemImage: String {
         switch self {
         case .cut: return "arrow.right"
         case .pass: return "arrow.right.dotted"
@@ -26,14 +27,34 @@ enum LineType: String, Codable, CaseIterable {
     }
 }
 
+enum LineColor: String, Codable, CaseIterable {
+    case black
+    case red
+    case blue
+    case green
+    case orange
+
+    var color: Color {
+        switch self {
+        case .black: return .black
+        case .red: return .red
+        case .blue: return .blue
+        case .green: return Color(red: 0.2, green: 0.7, blue: 0.2)
+        case .orange: return .orange
+        }
+    }
+}
+
 struct DrawingLine: Identifiable, Codable {
     let id: UUID
     var type: LineType
+    var lineColor: LineColor
     var points: [CGPoint]
 
-    init(id: UUID = UUID(), type: LineType, points: [CGPoint] = []) {
+    init(id: UUID = UUID(), type: LineType, lineColor: LineColor = .black, points: [CGPoint] = []) {
         self.id = id
         self.type = type
+        self.lineColor = lineColor
         self.points = points
     }
 }

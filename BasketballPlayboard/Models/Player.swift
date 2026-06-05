@@ -4,13 +4,6 @@ import CoreGraphics
 enum Team: String, Codable {
     case home
     case away
-
-    var displayName: String {
-        switch self {
-        case .home: return "ホーム"
-        case .away: return "アウェイ"
-        }
-    }
 }
 
 struct Player: Identifiable, Codable {
@@ -23,6 +16,14 @@ struct Player: Identifiable, Codable {
         self.id = id
         self.number = number
         self.team = team
+        self.position = position
+    }
+}
+
+struct Ball: Codable, Equatable {
+    var position: CGPoint
+
+    init(position: CGPoint = CGPoint(x: 0.5, y: 0.35)) {
         self.position = position
     }
 }
