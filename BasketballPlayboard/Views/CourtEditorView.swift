@@ -164,33 +164,31 @@ struct CourtEditorView: View {
                 // Players
                 ForEach(players) { player in
                     let screenPos = courtToScreen(player.position, cs: cs, origin: origin, isPortrait: isPortrait)
-                    RotatablePlayerView(
+                    InteractivePlayerView(
                         player: player,
                         isSelected: selectedPlayerID == player.id,
                         screenPosition: screenPos,
+                        onMove: editorMode == .move ? { location in
+                            isTouching = true
+                            selectedPlayerID = player.id
+                            if let idx = players.firstIndex(where: { $0.id == player.id }) {
+                                players[idx].position = screenToCourt(location, cs: cs, origin: origin, isPortrait: isPortrait)
+                            }
+                        } : nil,
                         onRotate: { angle in
                             if let idx = players.firstIndex(where: { $0.id == player.id }) {
                                 players[idx].facing = angle
                             }
-                        }
+                        },
+                        onMoveEnd: { isTouching = false }
                     )
-                    .gesture(
-                        editorMode == .move ?
-                        DragGesture()
-                            .onChanged { v in
-                                isTouching = true
-                                selectedPlayerID = player.id
-                                if let idx = players.firstIndex(where: { $0.id == player.id }) {
-                                    players[idx].position = screenToCourt(v.location, cs: cs, origin: origin, isPortrait: isPortrait)
-                                }
+                    .simultaneousGesture(
+                        LongPressGesture(minimumDuration: 0.5)
+                            .onEnded { _ in
+                                editingPlayerID = player.id
+                                editingNumber = player.number
                             }
-                            .onEnded { _ in isTouching = false }
-                        : nil
                     )
-                    .onLongPressGesture {
-                        editingPlayerID = player.id
-                        editingNumber = player.number
-                    }
                 }
             }
             .contentShape(Rectangle())

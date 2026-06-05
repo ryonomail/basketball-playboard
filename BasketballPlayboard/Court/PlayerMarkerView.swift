@@ -3,7 +3,6 @@ import SwiftUI
 struct PlayerMarkerView: View {
     let player: Player
     let isSelected: Bool
-    var onRotate: ((Double) -> Void)? = nil
 
     private var teamColor: Color {
         player.team == .home ? .blue : .red
@@ -11,76 +10,113 @@ struct PlayerMarkerView: View {
 
     var body: some View {
         ZStack {
-            // Vision cone - draggable to rotate
+            // Vision cone
             VisionCone()
                 .fill(teamColor.opacity(0.18))
                 .frame(width: 60, height: 50)
                 .offset(y: -30)
                 .rotationEffect(.radians(player.facing))
-                .gesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { value in
-                            // Calculate angle from center of player to drag point
-                            let dx = value.location.x - 30 // cone frame is 60 wide, center at 30
-                            // The drag location is relative to the cone's frame, but we need
-                            // to account for the cone being offset and rotated.
-                            // Simpler: use the startLocation + translation to get position
-                            // relative to the gesture view's original center
-                        }
+
+            // Arms that rotate with facing
+            ArmsShape()
+                .stroke(teamColor, style: StrokeStyle(lineWidth: 3.5, lineCap: .round))
+                .frame(width: 30, height: 30)
+                .rotationEffect(.radians(player.facing))
+
+            // Body circle
+            Circle()
+                .fill(teamColor)
+                .frame(width: 22, height: 22)
+                .overlay(
+                    Circle().stroke(isSelected ? Color.yellow : Color.white, lineWidth: isSelected ? 2.5 : 1.2)
                 )
-                // Actually, let's use a gesture on the outer area instead
-
-            VStack(spacing: -2) {
-                Circle()
-                    .fill(teamColor)
-                    .frame(width: 16, height: 16)
-                    .overlay(
-                        Circle().stroke(isSelected ? Color.yellow : Color.white, lineWidth: isSelected ? 2.5 : 1)
-                    )
-
-                PawnBody()
-                    .fill(teamColor)
-                    .frame(width: 24, height: 18)
-                    .overlay(
-                        PawnBody().stroke(isSelected ? Color.yellow : Color.white, lineWidth: isSelected ? 2.5 : 1)
-                    )
-                    .overlay(
-                        Text(player.number)
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundColor(.white)
-                            .offset(y: 1)
-                    )
-            }
-            .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+                .overlay(
+                    Text(player.number)
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                )
         }
+        .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
         .frame(width: 80, height: 80)
         .contentShape(Circle().size(width: 80, height: 80))
     }
 }
 
-struct RotatablePlayerView: View {
+// Two arms extending from the body circle, pointing in the "up" direction (facing=0)
+struct ArmsShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let cx = rect.midX
+        let cy = rect.midY
+        let bodyR: CGFloat = rect.width * 0.37
+        let armLen: CGFloat = rect.width * 0.42
+        let spread: CGFloat = .pi / 3.2 // angle from forward direction
+
+        // Left arm: from body edge, angled forward-left
+        let lStartX = cx + bodyR * sin(-spread)
+        let lStartY = cy - bodyR * cos(-spread)
+        let lEndX = cx + (bodyR + armLen) * sin(-spread)
+        let lEndY = cy - (bodyR + armLen) * cos(-spread)
+        path.move(to: CGPoint(x: lStartX, y: lStartY))
+        path.addLine(to: CGPoint(x: lEndX, y: lEndY))
+
+        // Right arm: from body edge, angled forward-right
+        let rStartX = cx + bodyR * sin(spread)
+        let rStartY = cy - bodyR * cos(spread)
+        let rEndX = cx + (bodyR + armLen) * sin(spread)
+        let rEndY = cy - (bodyR + armLen) * cos(spread)
+        path.move(to: CGPoint(x: rStartX, y: rStartY))
+        path.addLine(to: CGPoint(x: rEndX, y: rEndY))
+
+        return path
+    }
+}
+
+struct InteractivePlayerView: View {
     let player: Player
     let isSelected: Bool
     let screenPosition: CGPoint
+    var onMove: ((CGPoint) -> Void)? = nil
     var onRotate: ((Double) -> Void)? = nil
+    var onMoveEnd: (() -> Void)? = nil
+
+    @State private var gestureMode: GestureMode = .undecided
+
+    private enum GestureMode {
+        case undecided, move, rotate
+    }
 
     var body: some View {
         PlayerMarkerView(player: player, isSelected: isSelected)
             .position(screenPosition)
-            .simultaneousGesture(
-                DragGesture(minimumDistance: 5)
+            .gesture(
+                DragGesture(minimumDistance: 3)
                     .onChanged { value in
-                        // If drag started far from center (in the cone area), treat as rotation
-                        let startFromCenter = hypot(
-                            value.startLocation.x - screenPosition.x,
-                            value.startLocation.y - screenPosition.y
-                        )
-                        if startFromCenter > 15 {
+                        if gestureMode == .undecided {
+                            let startDist = hypot(
+                                value.startLocation.x - screenPosition.x,
+                                value.startLocation.y - screenPosition.y
+                            )
+                            gestureMode = startDist > 18 ? .rotate : .move
+                        }
+
+                        switch gestureMode {
+                        case .move:
+                            onMove?(value.location)
+                        case .rotate:
                             let dx = value.location.x - screenPosition.x
                             let dy = value.location.y - screenPosition.y
-                            let angle = atan2(dx, -dy) // 0 = up, clockwise positive
+                            let angle = atan2(dx, -dy)
                             onRotate?(angle)
+                        case .undecided:
+                            break
                         }
+                    }
+                    .onEnded { _ in
+                        if gestureMode == .move {
+                            onMoveEnd?()
+                        }
+                        gestureMode = .undecided
                     }
             )
     }
@@ -101,26 +137,6 @@ struct VisionCone: Shape {
             startAngle: .radians(Double(-CGFloat.pi / 2 + spread / 2)),
             endAngle: .radians(Double(-CGFloat.pi / 2 - spread / 2)),
             clockwise: true
-        )
-        path.closeSubpath()
-        return path
-    }
-}
-
-struct PawnBody: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let inset = rect.width * 0.18
-        path.move(to: CGPoint(x: inset, y: 0))
-        path.addLine(to: CGPoint(x: rect.width - inset, y: 0))
-        path.addQuadCurve(
-            to: CGPoint(x: rect.width, y: rect.height),
-            control: CGPoint(x: rect.width - inset / 2, y: rect.height * 0.5)
-        )
-        path.addLine(to: CGPoint(x: 0, y: rect.height))
-        path.addQuadCurve(
-            to: CGPoint(x: inset, y: 0),
-            control: CGPoint(x: inset / 2, y: rect.height * 0.5)
         )
         path.closeSubpath()
         return path
