@@ -30,7 +30,7 @@ struct CourtEditorView: View {
             let isPortrait = geo.size.height > geo.size.width
 
             ZStack {
-                Color(.systemGray5).ignoresSafeArea()
+                Color(.systemGray5).ignoresSafeArea(.all)
 
                 if isPortrait {
                     portraitLayout(geo: geo, isPortrait: true)
@@ -39,7 +39,6 @@ struct CourtEditorView: View {
                 }
             }
         }
-        .ignoresSafeArea(.container, edges: .all)
         .alert("背番号を変更", isPresented: Binding(
             get: { editingPlayerID != nil },
             set: { if !$0 { editingPlayerID = nil } }
@@ -58,6 +57,7 @@ struct CourtEditorView: View {
     private func landscapeLayout(geo: GeometryProxy, isPortrait: Bool) -> some View {
         ZStack {
             courtView(geoSize: geo.size, isPortrait: false)
+                .ignoresSafeArea(.all)
 
             if !isTouching {
                 HStack {
@@ -69,19 +69,19 @@ struct CourtEditorView: View {
                         Spacer()
                         courtModeToggle
                     }
-                    .padding(.leading, geo.safeAreaInsets.leading + 16)
-                    .padding(.top, geo.safeAreaInsets.top + 12)
-                    .padding(.bottom, geo.safeAreaInsets.bottom + 12)
                     Spacer()
                 }
+                .padding(.leading, 16)
+                .padding(.top, 12)
+                .padding(.bottom, 12)
 
                 HStack {
                     Spacer()
                     toolPanel(isPortrait: false)
-                        .padding(.trailing, geo.safeAreaInsets.trailing + 16)
-                        .padding(.top, geo.safeAreaInsets.top + 12)
-                        .padding(.bottom, geo.safeAreaInsets.bottom + 12)
                 }
+                .padding(.trailing, 16)
+                .padding(.top, 12)
+                .padding(.bottom, 12)
             }
         }
     }
@@ -100,13 +100,13 @@ struct CourtEditorView: View {
                     courtModeToggle
                 }
                 .padding(.horizontal, 16)
-                .padding(.top, geo.safeAreaInsets.top + 8)
+                .padding(.top, 8)
                 .padding(.bottom, 4)
             }
 
             courtView(geoSize: CGSize(
                 width: geo.size.width,
-                height: isTouching ? geo.size.height : geo.size.height - geo.safeAreaInsets.top - 80
+                height: isTouching ? geo.size.height : geo.size.height - 80
             ), isPortrait: true)
 
             if !isTouching {
