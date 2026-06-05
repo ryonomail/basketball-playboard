@@ -158,32 +158,16 @@ struct CourtRenderer: Shape {
         let startAngleRad = Double.pi / 2 + Double(angleAtSide)
         let endAngleRad = Double.pi / 2 - Double(angleAtSide)
 
-        if direction > 0 {
-            // Arc going from left to right
-            let arcSegments = 40
-            for i in 0...arcSegments {
-                let t = Double(i) / Double(arcSegments)
-                let angle = startAngleRad + t * (endAngleRad - startAngleRad)
-                let px = basketCenterX - CGFloat(cos(angle)) * threeRx
-                let py = basketCenterY + CGFloat(sin(angle)) * threeRy
-                if i == 0 {
-                    path.move(to: CGPoint(x: px, y: py))
-                } else {
-                    path.addLine(to: CGPoint(x: px, y: py))
-                }
-            }
-        } else {
-            let arcSegments = 40
-            for i in 0...arcSegments {
-                let t = Double(i) / Double(arcSegments)
-                let angle = -(startAngleRad + t * (endAngleRad - startAngleRad))
-                let px = basketCenterX - CGFloat(cos(angle)) * threeRx
-                let py = basketCenterY - CGFloat(sin(angle)) * threeRy
-                if i == 0 {
-                    path.move(to: CGPoint(x: px, y: py))
-                } else {
-                    path.addLine(to: CGPoint(x: px, y: py))
-                }
+        let arcSegments = 40
+        for i in 0...arcSegments {
+            let t = Double(i) / Double(arcSegments)
+            let angle = startAngleRad + t * (endAngleRad - startAngleRad)
+            let px = basketCenterX - CGFloat(cos(angle)) * threeRx
+            let py = basketCenterY + direction * CGFloat(sin(angle)) * threeRy
+            if i == 0 {
+                path.move(to: CGPoint(x: px, y: py))
+            } else {
+                path.addLine(to: CGPoint(x: px, y: py))
             }
         }
 
