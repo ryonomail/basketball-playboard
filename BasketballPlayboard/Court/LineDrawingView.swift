@@ -69,7 +69,13 @@ struct LineDrawingView: View {
     private func drawArrowhead(context: GraphicsContext, points: [CGPoint], color: Color) {
         guard points.count >= 2 else { return }
         let tip = points.last!
-        let prev = points[points.count - 2]
+        // Find a point far enough back for a stable angle
+        var prev = points[points.count - 2]
+        let minDist: CGFloat = 8
+        for i in stride(from: points.count - 2, through: 0, by: -1) {
+            let d = hypot(points[i].x - tip.x, points[i].y - tip.y)
+            if d >= minDist { prev = points[i]; break }
+        }
         let angle = atan2(tip.y - prev.y, tip.x - prev.x)
         let len: CGFloat = 12
         let spread: CGFloat = .pi / 5

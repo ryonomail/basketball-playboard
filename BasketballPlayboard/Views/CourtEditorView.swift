@@ -3,6 +3,7 @@ import SwiftUI
 enum EditorMode: String {
     case move
     case draw
+    case erase
 }
 
 struct CourtEditorView: View {
@@ -144,6 +145,7 @@ struct CourtEditorView: View {
         let content = Group {
             modeBtn("hand.draw", mode: .move)
             modeBtn("pencil.tip", mode: .draw)
+            modeBtn("eraser", mode: .erase)
 
             if editorMode == .draw {
                 if horizontal {
@@ -297,6 +299,15 @@ struct CourtEditorView: View {
                     }
                 : nil
             )
+            .gesture(
+                editorMode == .erase ?
+                DragGesture(minimumDistance: 0)
+                    .onChanged { v in
+                        let courtPt = screenToCourt(v.location, cs: cs, origin: origin, isPortrait: isPortrait)
+                        eraseLineNear(courtPt)
+                    }
+                : nil
+            )
         }
     }
 
@@ -445,6 +456,15 @@ struct CourtEditorView: View {
         ball = Ball()
         lines = []
         selectedPlayerID = nil
+    }
+
+    private func eraseLineNear(_ courtPt: CGPoint) {
+        let threshold: CGFloat = 0.03
+        lines.removeAll { line in
+            line.points.contains { pt in
+                hypot(pt.x - courtPt.x, pt.y - courtPt.y) < threshold
+            }
+        }
     }
 
     private func simplify(_ points: [CGPoint], tolerance: CGFloat) -> [CGPoint] {
