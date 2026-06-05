@@ -11,12 +11,14 @@ struct Player: Identifiable, Codable {
     var number: String
     var team: Team
     var position: CGPoint
+    var facing: Double // radians, 0 = up
 
-    init(id: UUID = UUID(), number: String, team: Team, position: CGPoint) {
+    init(id: UUID = UUID(), number: String, team: Team, position: CGPoint, facing: Double = 0) {
         self.id = id
         self.number = number
         self.team = team
         self.position = position
+        self.facing = facing
     }
 }
 

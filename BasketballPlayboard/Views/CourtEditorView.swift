@@ -39,7 +39,7 @@ struct CourtEditorView: View {
                 }
             }
         }
-        .ignoresSafeArea()
+        .ignoresSafeArea(.container, edges: .all)
         .alert("背番号を変更", isPresented: Binding(
             get: { editingPlayerID != nil },
             set: { if !$0 { editingPlayerID = nil } }
@@ -69,18 +69,18 @@ struct CourtEditorView: View {
                         Spacer()
                         courtModeToggle
                     }
-                    .padding(.leading, max(geo.safeAreaInsets.leading, 12) + 4)
-                    .padding(.top, max(geo.safeAreaInsets.top, 8) + 4)
-                    .padding(.bottom, max(geo.safeAreaInsets.bottom, 8) + 4)
+                    .padding(.leading, geo.safeAreaInsets.leading + 16)
+                    .padding(.top, geo.safeAreaInsets.top + 12)
+                    .padding(.bottom, geo.safeAreaInsets.bottom + 12)
                     Spacer()
                 }
 
                 HStack {
                     Spacer()
                     toolPanel(isPortrait: false)
-                        .padding(.trailing, max(geo.safeAreaInsets.trailing, 12) + 4)
-                        .padding(.top, max(geo.safeAreaInsets.top, 8) + 4)
-                        .padding(.bottom, max(geo.safeAreaInsets.bottom, 8) + 4)
+                        .padding(.trailing, geo.safeAreaInsets.trailing + 16)
+                        .padding(.top, geo.safeAreaInsets.top + 12)
+                        .padding(.bottom, geo.safeAreaInsets.bottom + 12)
                 }
             }
         }
@@ -99,8 +99,8 @@ struct CourtEditorView: View {
                     Spacer()
                     courtModeToggle
                 }
-                .padding(.horizontal, 10)
-                .padding(.top, geo.safeAreaInsets.top + 4)
+                .padding(.horizontal, 16)
+                .padding(.top, geo.safeAreaInsets.top + 8)
                 .padding(.bottom, 4)
             }
 
@@ -180,6 +180,14 @@ struct CourtEditorView: View {
                             }
                             .onEnded { _ in isTouching = false }
                         : nil
+                    )
+                    .simultaneousGesture(
+                        RotationGesture()
+                            .onChanged { angle in
+                                if let idx = players.firstIndex(where: { $0.id == player.id }) {
+                                    players[idx].facing = angle.radians
+                                }
+                            }
                     )
                     .onLongPressGesture {
                         editingPlayerID = player.id
