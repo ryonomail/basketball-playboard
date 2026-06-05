@@ -13,7 +13,17 @@ targets:
       - BasketballPlayboard
     info:
       path: BasketballPlayboard/Info.plist
-      properties: {}
+      properties:
+        UIStatusBarHidden: true
+        UIViewControllerBasedStatusBarAppearance: false
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+          - UIInterfaceOrientationPortraitUpsideDown
     settings:
       base:
         INFOPLIST_FILE: BasketballPlayboard/Info.plist

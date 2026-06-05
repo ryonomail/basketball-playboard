@@ -8,6 +8,8 @@ struct BasketballPlayboardApp: App {
         WindowGroup {
             CourtEditorView()
                 .environmentObject(playStore)
+                .statusBarHidden(true)
+                .persistentSystemOverlays(.hidden)
         }
     }
 }
