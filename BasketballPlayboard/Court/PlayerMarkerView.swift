@@ -69,6 +69,7 @@ struct InteractivePlayerView: View {
     let player: Player
     let isSelected: Bool
     let screenPosition: CGPoint
+    var interactive: Bool = true
     var onMove: ((CGPoint) -> Void)? = nil
     var onRotate: ((Double) -> Void)? = nil
     var onMoveEnd: (() -> Void)? = nil
@@ -82,7 +83,10 @@ struct InteractivePlayerView: View {
     var body: some View {
         PlayerMarkerView(player: player, isSelected: isSelected)
             .position(screenPosition)
+            .contentShape(Circle().size(width: 80, height: 80)
+                .offset(x: screenPosition.x - 40, y: screenPosition.y - 40))
             .gesture(
+                interactive ?
                 DragGesture(minimumDistance: 3)
                     .onChanged { value in
                         if gestureMode == .undecided {
@@ -111,6 +115,7 @@ struct InteractivePlayerView: View {
                         }
                         gestureMode = .undecided
                     }
+                : nil
             )
     }
 }

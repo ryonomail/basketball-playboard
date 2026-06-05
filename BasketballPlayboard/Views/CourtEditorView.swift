@@ -253,6 +253,7 @@ struct CourtEditorView: View {
                         player: player,
                         isSelected: selectedPlayerID == player.id,
                         screenPosition: screenPos,
+                        interactive: editorMode == .move,
                         onMove: editorMode == .move ? { location in
                             selectedPlayerID = player.id
                             if let idx = players.firstIndex(where: { $0.id == player.id }) {
