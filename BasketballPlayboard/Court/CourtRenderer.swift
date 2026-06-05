@@ -14,11 +14,12 @@ enum CourtMode: String, CaseIterable {
     func aspectRatio(landscape: Bool) -> CGFloat {
         switch self {
         case .half:
-            // FIBA half: 15m across × 14m along
-            return landscape ? 14.0 / 15.0 : 15.0 / 14.0
+            // Half: across(15m)→X, along(14m)→Y in both orientations
+            return 15.0 / 14.0
         case .full:
-            // FIBA full: 15m across × 28m along
-            return landscape ? 15.0 / 28.0 : 28.0 / 15.0
+            // Full landscape: along(28m)→X, across(15m)→Y
+            // Full portrait: across(15m)→X, along(28m)→Y
+            return landscape ? 28.0 / 15.0 : 15.0 / 28.0
         }
     }
 
@@ -37,14 +38,19 @@ struct CourtRenderer: Shape {
     private var courtLen: CGFloat { mode.courtLength }
 
     // Map court coordinates (across: 0-15m, along: 0-courtLen) to screen point
-    // In landscape: along→X, across→Y
-    // In portrait:  across→X, along→Y
+    // Portrait:        across→X, along→Y (basket at top)
+    // Landscape half:  across→X, along→Y inverted (basket at bottom / endline at bottom)
+    // Landscape full:  along→X, across→Y (baskets at left & right)
     private func pt(_ across: CGFloat, _ along: CGFloat, _ w: CGFloat, _ h: CGFloat) -> CGPoint {
         let ax = across / 15.0
         let ay = along / courtLen
-        return isPortrait
-            ? CGPoint(x: ax * w, y: ay * h)
-            : CGPoint(x: ay * w, y: ax * h)
+        if isPortrait {
+            return CGPoint(x: ax * w, y: ay * h)
+        } else if mode == .half {
+            return CGPoint(x: ax * w, y: (1 - ay) * h)
+        } else {
+            return CGPoint(x: ay * w, y: ax * h)
+        }
     }
 
     func path(in rect: CGRect) -> Path {

@@ -69,16 +69,18 @@ struct CourtEditorView: View {
                         Spacer()
                         courtModeToggle
                     }
-                    .padding(.leading, geo.safeAreaInsets.leading + 6)
-                    .padding(.vertical, geo.safeAreaInsets.top + 6)
+                    .padding(.leading, max(geo.safeAreaInsets.leading, 12) + 4)
+                    .padding(.top, max(geo.safeAreaInsets.top, 8) + 4)
+                    .padding(.bottom, max(geo.safeAreaInsets.bottom, 8) + 4)
                     Spacer()
                 }
 
                 HStack {
                     Spacer()
                     toolPanel(isPortrait: false)
-                        .padding(.trailing, geo.safeAreaInsets.trailing + 6)
-                        .padding(.vertical, geo.safeAreaInsets.top + 6)
+                        .padding(.trailing, max(geo.safeAreaInsets.trailing, 12) + 4)
+                        .padding(.top, max(geo.safeAreaInsets.top, 8) + 4)
+                        .padding(.bottom, max(geo.safeAreaInsets.bottom, 8) + 4)
                 }
             }
         }
@@ -134,12 +136,12 @@ struct CourtEditorView: View {
                     .frame(width: cs.width, height: cs.height)
                     .position(x: geo.size.width / 2, y: geo.size.height / 2)
 
-                LineDrawingView(lines: lines, isPortrait: isPortrait)
+                LineDrawingView(lines: lines, isPortrait: isPortrait, isLandscapeHalf: !isPortrait && courtMode == .half)
                     .frame(width: cs.width, height: cs.height)
                     .position(x: geo.size.width / 2, y: geo.size.height / 2)
 
                 if let drawing = currentDrawing {
-                    LineDrawingView(lines: [drawing], isPortrait: isPortrait)
+                    LineDrawingView(lines: [drawing], isPortrait: isPortrait, isLandscapeHalf: !isPortrait && courtMode == .half)
                         .frame(width: cs.width, height: cs.height)
                         .position(x: geo.size.width / 2, y: geo.size.height / 2)
                 }
@@ -218,8 +220,13 @@ struct CourtEditorView: View {
 
     private func courtToScreen(_ pos: CGPoint, cs: CGSize, origin: CGPoint, isPortrait: Bool) -> CGPoint {
         if isPortrait {
+            // across→X, along→Y
             return CGPoint(x: origin.x + pos.x * cs.width, y: origin.y + pos.y * cs.height)
+        } else if courtMode == .half {
+            // across→X, along→Y inverted (endline at bottom)
+            return CGPoint(x: origin.x + pos.x * cs.width, y: origin.y + (1 - pos.y) * cs.height)
         } else {
+            // along→X, across→Y (full court horizontal)
             return CGPoint(x: origin.x + pos.y * cs.width, y: origin.y + pos.x * cs.height)
         }
     }
@@ -230,6 +237,11 @@ struct CourtEditorView: View {
             raw = CGPoint(
                 x: (screen.x - origin.x) / cs.width,
                 y: (screen.y - origin.y) / cs.height
+            )
+        } else if courtMode == .half {
+            raw = CGPoint(
+                x: (screen.x - origin.x) / cs.width,
+                y: 1 - (screen.y - origin.y) / cs.height
             )
         } else {
             raw = CGPoint(
