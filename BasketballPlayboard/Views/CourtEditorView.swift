@@ -45,6 +45,12 @@ struct CourtEditorView: View {
             TextField("番号", text: $editingNumber)
                 .keyboardType(.numberPad)
             Button("OK") { applyNumberEdit() }
+            Button("削除", role: .destructive) {
+                if let pid = editingPlayerID {
+                    players.removeAll { $0.id == pid }
+                }
+                editingPlayerID = nil
+            }
             Button("キャンセル", role: .cancel) { editingPlayerID = nil }
         }
         .sheet(isPresented: $showSaveSheet) { saveSheet }
@@ -107,6 +113,26 @@ struct CourtEditorView: View {
             floatingBtn("folder") { showLoadSheet = true }
             floatingBtn("arrow.uturn.backward") { if !lines.isEmpty { lines.removeLast() } }
             floatingBtn("trash", color: .red) { resetBoard() }
+            addPlayerBtn(team: .home)
+            addPlayerBtn(team: .away)
+        }
+    }
+
+    private func addPlayerBtn(team: Team) -> some View {
+        Button {
+            let count = players.filter { $0.team == team }.count
+            let number = "\(count + 1)"
+            let pos = CGPoint(x: CGFloat.random(in: 0.3...0.7), y: CGFloat.random(in: 0.3...0.7))
+            players.append(Player(number: number, team: team, position: pos))
+        } label: {
+            ZStack {
+                Image(systemName: "plus")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.white)
+                    .frame(width: 34, height: 34)
+                    .background(team == .home ? Color.blue : Color.red)
+                    .cornerRadius(8)
+            }
         }
     }
 
