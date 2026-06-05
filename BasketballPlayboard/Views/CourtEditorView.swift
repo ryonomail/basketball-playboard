@@ -218,9 +218,9 @@ struct CourtEditorView: View {
 
     private func courtToScreen(_ pos: CGPoint, cs: CGSize, origin: CGPoint, isPortrait: Bool) -> CGPoint {
         if isPortrait {
-            return CGPoint(x: origin.x + pos.y * cs.width, y: origin.y + pos.x * cs.height)
-        } else {
             return CGPoint(x: origin.x + pos.x * cs.width, y: origin.y + pos.y * cs.height)
+        } else {
+            return CGPoint(x: origin.x + pos.y * cs.width, y: origin.y + pos.x * cs.height)
         }
     }
 
@@ -228,13 +228,13 @@ struct CourtEditorView: View {
         let raw: CGPoint
         if isPortrait {
             raw = CGPoint(
-                x: (screen.y - origin.y) / cs.height,
-                y: (screen.x - origin.x) / cs.width
+                x: (screen.x - origin.x) / cs.width,
+                y: (screen.y - origin.y) / cs.height
             )
         } else {
             raw = CGPoint(
-                x: (screen.x - origin.x) / cs.width,
-                y: (screen.y - origin.y) / cs.height
+                x: (screen.y - origin.y) / cs.height,
+                y: (screen.x - origin.x) / cs.width
             )
         }
         return CGPoint(x: max(0, min(1, raw.x)), y: max(0, min(1, raw.y)))

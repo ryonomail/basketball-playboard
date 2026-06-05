@@ -38,8 +38,8 @@ struct LineDrawingView: View {
 
     private func mapPoint(_ p: CGPoint, size: CGSize) -> CGPoint {
         isPortrait
-            ? CGPoint(x: p.y * size.width, y: p.x * size.height)
-            : CGPoint(x: p.x * size.width, y: p.y * size.height)
+            ? CGPoint(x: p.x * size.width, y: p.y * size.height)
+            : CGPoint(x: p.y * size.width, y: p.x * size.height)
     }
 
     private func smoothPath(points: [CGPoint]) -> Path {

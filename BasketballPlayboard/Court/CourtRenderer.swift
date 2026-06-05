@@ -15,10 +15,10 @@ enum CourtMode: String, CaseIterable {
         switch self {
         case .half:
             // FIBA half: 15m across × 14m along
-            return landscape ? 15.0 / 14.0 : 14.0 / 15.0
+            return landscape ? 14.0 / 15.0 : 15.0 / 14.0
         case .full:
             // FIBA full: 15m across × 28m along
-            return landscape ? 28.0 / 15.0 : 15.0 / 28.0
+            return landscape ? 15.0 / 28.0 : 28.0 / 15.0
         }
     }
 
@@ -37,14 +37,14 @@ struct CourtRenderer: Shape {
     private var courtLen: CGFloat { mode.courtLength }
 
     // Map court coordinates (across: 0-15m, along: 0-courtLen) to screen point
-    // In landscape: across→X, along→Y
-    // In portrait:  along→X, across→Y
+    // In landscape: along→X, across→Y
+    // In portrait:  across→X, along→Y
     private func pt(_ across: CGFloat, _ along: CGFloat, _ w: CGFloat, _ h: CGFloat) -> CGPoint {
         let ax = across / 15.0
         let ay = along / courtLen
         return isPortrait
-            ? CGPoint(x: ay * w, y: ax * h)
-            : CGPoint(x: ax * w, y: ay * h)
+            ? CGPoint(x: ax * w, y: ay * h)
+            : CGPoint(x: ay * w, y: ax * h)
     }
 
     func path(in rect: CGRect) -> Path {
