@@ -433,7 +433,20 @@ struct LinePreview: View {
                 context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round, dash: [6, 4]))
                 drawArrow(context: context, at: CGPoint(x: size.width - inset, y: y), angle: 0, color: color)
             case .dribble:
-                context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round, dash: [2, 4]))
+                // Wavy line preview
+                var wavy = Path()
+                let waveAmp: CGFloat = 3.5
+                let waveLen: CGFloat = 8
+                let startX = inset
+                let endX = size.width - inset
+                wavy.move(to: CGPoint(x: startX, y: y))
+                var cx = startX
+                while cx <= endX {
+                    let wave = sin((cx - startX) / waveLen * .pi * 2) * waveAmp
+                    wavy.addLine(to: CGPoint(x: cx, y: y + wave))
+                    cx += 1
+                }
+                context.stroke(wavy, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                 drawArrow(context: context, at: CGPoint(x: size.width - inset, y: y), angle: 0, color: color)
             case .screen:
                 context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round))

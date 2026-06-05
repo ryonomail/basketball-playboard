@@ -24,8 +24,8 @@ struct LineDrawingView: View {
                     drawArrowhead(context: context, points: pts, color: color)
 
                 case .dribble:
-                    let path = smoothPath(points: pts)
-                    context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round, dash: [3, 5]))
+                    let wavyPath = wavyLine(points: pts, amplitude: 4, wavelength: 10)
+                    context.stroke(wavyPath, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                     drawArrowhead(context: context, points: pts, color: color)
 
                 case .screen:
@@ -79,6 +79,54 @@ struct LineDrawingView: View {
         arrow.move(to: tip)
         arrow.addLine(to: CGPoint(x: tip.x - len * cos(angle + spread), y: tip.y - len * sin(angle + spread)))
         context.stroke(arrow, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+    }
+
+    private func wavyLine(points: [CGPoint], amplitude: CGFloat, wavelength: CGFloat) -> Path {
+        var path = Path()
+        guard points.count >= 2 else { return path }
+
+        // Walk along the polyline and oscillate perpendicular
+        var totalDist: CGFloat = 0
+        var segments: [(CGPoint, CGFloat)] = [(points[0], 0)]
+        for i in 1..<points.count {
+            let d = hypot(points[i].x - points[i-1].x, points[i].y - points[i-1].y)
+            totalDist += d
+            segments.append((points[i], totalDist))
+        }
+        guard totalDist > 0 else { return path }
+
+        let step: CGFloat = 2
+        var first = true
+        var dist: CGFloat = 0
+        while dist <= totalDist {
+            // Find segment
+            var segIdx = 0
+            for i in 1..<segments.count {
+                if segments[i].1 >= dist { segIdx = i - 1; break }
+            }
+            let (p0, d0) = segments[segIdx]
+            let (p1, d1) = segments[min(segIdx + 1, segments.count - 1)]
+            let segLen = d1 - d0
+            let t = segLen > 0 ? (dist - d0) / segLen : 0
+            let baseX = p0.x + (p1.x - p0.x) * t
+            let baseY = p0.y + (p1.y - p0.y) * t
+
+            // Perpendicular direction
+            let dx = p1.x - p0.x
+            let dy = p1.y - p0.y
+            let len = hypot(dx, dy)
+            let nx = len > 0 ? -dy / len : 0
+            let ny = len > 0 ? dx / len : 0
+
+            let wave = sin(dist / wavelength * .pi * 2) * amplitude
+            let px = baseX + nx * wave
+            let py = baseY + ny * wave
+
+            if first { path.move(to: CGPoint(x: px, y: py)); first = false }
+            else { path.addLine(to: CGPoint(x: px, y: py)) }
+            dist += step
+        }
+        return path
     }
 
     private func drawScreenBar(context: GraphicsContext, points: [CGPoint], color: Color) {
