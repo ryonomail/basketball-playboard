@@ -1,0 +1,24 @@
+name: BasketballPlayboard
+options:
+  bundleIdPrefix: com.ryonomail
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.0"
+
+targets:
+  BasketballPlayboard:
+    type: application
+    platform: iOS
+    sources:
+      - BasketballPlayboard
+    info:
+      path: BasketballPlayboard/Info.plist
+    settings:
+      base:
+        INFOPLIST_FILE: BasketballPlayboard/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        SWIFT_VERSION: "5.9"
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        PRODUCT_BUNDLE_IDENTIFIER: com.ryonomail.BasketballPlayboard
+        CODE_SIGN_STYLE: Automatic

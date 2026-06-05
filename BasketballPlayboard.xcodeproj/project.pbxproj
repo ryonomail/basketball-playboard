@@ -1,0 +1,378 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0049ECF2C96D21C19365F9BE /* BasketballPlayboardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D1CC036922ABC065E0BA0 /* BasketballPlayboardApp.swift */; };
+		158403CDA12083B81106B834 /* Play.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71CDF3779A2BBFF53B1DCBFC /* Play.swift */; };
+		27A0A191A60EDC2716A74D5F /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D1B07EB7D2484000560916 /* HomeView.swift */; };
+		3E509660BEFAF91A853091CA /* Formation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C84EFE8B5D5170C4B717A7 /* Formation.swift */; };
+		540E3B6C1FB3AF66612218AF /* PlayStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8222573139CB6BC54CD9F2E /* PlayStore.swift */; };
+		83B25B0CA997616A4669E5A1 /* DrawingLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BB693D80B688CC98079666 /* DrawingLine.swift */; };
+		8695CDE39BBA0BBC7C8DDA15 /* CourtRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071E819AF15AA14F8C9904F3 /* CourtRenderer.swift */; };
+		8A58714B04D27BA72918378D /* LineDrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A7CBD47EE1FD5CC9B6D72E0 /* LineDrawingView.swift */; };
+		D1C6ACE83FF339BD694FB7A9 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814DD588312A3FD0DFF278E6 /* Player.swift */; };
+		D3BDBE315F7059A4BA26BA78 /* PlaybackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6B9AC78AE85FF672D04305B /* PlaybackView.swift */; };
+		D4767706DCBAEAA3A5DB4EE6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13A0464536F3A37A055C80CA /* Assets.xcassets */; };
+		D4C0ECF8030B8F9BEBF2C290 /* CourtEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D04C3CAFF91D0F724D218984 /* CourtEditorView.swift */; };
+		E9DA2FEDB1749AD5F864C73F /* PlayerMarkerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A6321FD2C03AA71CDF0885 /* PlayerMarkerView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		071E819AF15AA14F8C9904F3 /* CourtRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourtRenderer.swift; sourceTree = "<group>"; };
+		07A6321FD2C03AA71CDF0885 /* PlayerMarkerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerMarkerView.swift; sourceTree = "<group>"; };
+		13A0464536F3A37A055C80CA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1A7CBD47EE1FD5CC9B6D72E0 /* LineDrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineDrawingView.swift; sourceTree = "<group>"; };
+		64C84EFE8B5D5170C4B717A7 /* Formation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formation.swift; sourceTree = "<group>"; };
+		71CDF3779A2BBFF53B1DCBFC /* Play.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Play.swift; sourceTree = "<group>"; };
+		814DD588312A3FD0DFF278E6 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		9B70D76E3C068E89AFEB2BED /* BasketballPlayboard.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BasketballPlayboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6B9AC78AE85FF672D04305B /* PlaybackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackView.swift; sourceTree = "<group>"; };
+		B8222573139CB6BC54CD9F2E /* PlayStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayStore.swift; sourceTree = "<group>"; };
+		B8758BEF8FBCF342D22D5F6E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		C6D1B07EB7D2484000560916 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		C89D1CC036922ABC065E0BA0 /* BasketballPlayboardApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketballPlayboardApp.swift; sourceTree = "<group>"; };
+		D04C3CAFF91D0F724D218984 /* CourtEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourtEditorView.swift; sourceTree = "<group>"; };
+		E2BB693D80B688CC98079666 /* DrawingLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingLine.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		10C34B4E00517287EC289867 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				E2BB693D80B688CC98079666 /* DrawingLine.swift */,
+				64C84EFE8B5D5170C4B717A7 /* Formation.swift */,
+				71CDF3779A2BBFF53B1DCBFC /* Play.swift */,
+				814DD588312A3FD0DFF278E6 /* Player.swift */,
+				B8222573139CB6BC54CD9F2E /* PlayStore.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		649F86F3889EB98F0CF6113F /* Court */ = {
+			isa = PBXGroup;
+			children = (
+				071E819AF15AA14F8C9904F3 /* CourtRenderer.swift */,
+				1A7CBD47EE1FD5CC9B6D72E0 /* LineDrawingView.swift */,
+				07A6321FD2C03AA71CDF0885 /* PlayerMarkerView.swift */,
+			);
+			path = Court;
+			sourceTree = "<group>";
+		};
+		AD9C1AAF3D34C006CD7F75C0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9B70D76E3C068E89AFEB2BED /* BasketballPlayboard.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C359F44EFCBAFD8BB437A94B /* BasketballPlayboard */ = {
+			isa = PBXGroup;
+			children = (
+				13A0464536F3A37A055C80CA /* Assets.xcassets */,
+				C89D1CC036922ABC065E0BA0 /* BasketballPlayboardApp.swift */,
+				B8758BEF8FBCF342D22D5F6E /* Info.plist */,
+				649F86F3889EB98F0CF6113F /* Court */,
+				10C34B4E00517287EC289867 /* Models */,
+				CA3C3B71B4CA6173630A34D4 /* Views */,
+			);
+			path = BasketballPlayboard;
+			sourceTree = "<group>";
+		};
+		CA3C3B71B4CA6173630A34D4 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				D04C3CAFF91D0F724D218984 /* CourtEditorView.swift */,
+				C6D1B07EB7D2484000560916 /* HomeView.swift */,
+				A6B9AC78AE85FF672D04305B /* PlaybackView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		CF412AF40A0C14FAA8E8642A = {
+			isa = PBXGroup;
+			children = (
+				C359F44EFCBAFD8BB437A94B /* BasketballPlayboard */,
+				AD9C1AAF3D34C006CD7F75C0 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2B50354FF0E6B4CF2CF1B30C /* BasketballPlayboard */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CAA2DB6B3BDCAAE68E2AD9DB /* Build configuration list for PBXNativeTarget "BasketballPlayboard" */;
+			buildPhases = (
+				FC8AD6469F0E6109A26C082C /* Sources */,
+				7BD3705048E5A09A0A046568 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BasketballPlayboard;
+			packageProductDependencies = (
+			);
+			productName = BasketballPlayboard;
+			productReference = 9B70D76E3C068E89AFEB2BED /* BasketballPlayboard.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DF0F70CC0FD699FFE47462D7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					2B50354FF0E6B4CF2CF1B30C = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = B9C98C1AAC80BDBB7048BEDC /* Build configuration list for PBXProject "BasketballPlayboard" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = CF412AF40A0C14FAA8E8642A;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = AD9C1AAF3D34C006CD7F75C0 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2B50354FF0E6B4CF2CF1B30C /* BasketballPlayboard */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7BD3705048E5A09A0A046568 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4767706DCBAEAA3A5DB4EE6 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FC8AD6469F0E6109A26C082C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0049ECF2C96D21C19365F9BE /* BasketballPlayboardApp.swift in Sources */,
+				D4C0ECF8030B8F9BEBF2C290 /* CourtEditorView.swift in Sources */,
+				8695CDE39BBA0BBC7C8DDA15 /* CourtRenderer.swift in Sources */,
+				83B25B0CA997616A4669E5A1 /* DrawingLine.swift in Sources */,
+				3E509660BEFAF91A853091CA /* Formation.swift in Sources */,
+				27A0A191A60EDC2716A74D5F /* HomeView.swift in Sources */,
+				8A58714B04D27BA72918378D /* LineDrawingView.swift in Sources */,
+				158403CDA12083B81106B834 /* Play.swift in Sources */,
+				540E3B6C1FB3AF66612218AF /* PlayStore.swift in Sources */,
+				D3BDBE315F7059A4BA26BA78 /* PlaybackView.swift in Sources */,
+				D1C6ACE83FF339BD694FB7A9 /* Player.swift in Sources */,
+				E9DA2FEDB1749AD5F864C73F /* PlayerMarkerView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		120AA35A015A3FF4E5068152 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		584E956AA69C0500DB6EE0C0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = BasketballPlayboard/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ryonomail.BasketballPlayboard;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6A7B792D2969980DD13338C1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = BasketballPlayboard/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ryonomail.BasketballPlayboard;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		805317BEB2F520240682FAA5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B9C98C1AAC80BDBB7048BEDC /* Build configuration list for PBXProject "BasketballPlayboard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				120AA35A015A3FF4E5068152 /* Debug */,
+				805317BEB2F520240682FAA5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CAA2DB6B3BDCAAE68E2AD9DB /* Build configuration list for PBXNativeTarget "BasketballPlayboard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				584E956AA69C0500DB6EE0C0 /* Debug */,
+				6A7B792D2969980DD13338C1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DF0F70CC0FD699FFE47462D7 /* Project object */;
+}
