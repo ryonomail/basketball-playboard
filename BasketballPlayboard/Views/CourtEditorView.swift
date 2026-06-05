@@ -205,6 +205,16 @@ struct CourtEditorView: View {
                     .frame(width: cs.width, height: cs.height)
                     .position(x: geo.size.width / 2, y: geo.size.height / 2)
 
+                // Vision cones (10m range, gradient fade)
+                VisionConeLayer(
+                    players: players,
+                    courtSize: cs,
+                    origin: origin,
+                    isPortrait: isPortrait,
+                    courtMode: courtMode
+                )
+                .allowsHitTesting(false)
+
                 LineDrawingView(lines: lines, isPortrait: isPortrait, isLandscapeHalf: !isPortrait && courtMode == .half)
                     .frame(width: cs.width, height: cs.height)
                     .position(x: geo.size.width / 2, y: geo.size.height / 2)

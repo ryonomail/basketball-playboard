@@ -10,13 +10,6 @@ struct PlayerMarkerView: View {
 
     var body: some View {
         ZStack {
-            // Vision cone
-            VisionCone()
-                .fill(teamColor.opacity(0.18))
-                .frame(width: 60, height: 50)
-                .offset(y: -30)
-                .rotationEffect(.radians(player.facing))
-
             // Arms that rotate with facing
             ArmsShape()
                 .stroke(teamColor, style: StrokeStyle(lineWidth: 3.5, lineCap: .round))
@@ -122,24 +115,80 @@ struct InteractivePlayerView: View {
     }
 }
 
-struct VisionCone: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let cx = rect.midX
-        let bottom = rect.maxY
-        let spread: CGFloat = .pi / 3
-        let length = rect.height
+// Vision cone layer rendered on the court with proper 10m scale and gradient
+struct VisionConeLayer: View {
+    let players: [Player]
+    let courtSize: CGSize
+    let origin: CGPoint
+    let isPortrait: Bool
+    let courtMode: CourtMode
 
-        path.move(to: CGPoint(x: cx, y: bottom))
-        path.addArc(
-            center: CGPoint(x: cx, y: bottom),
-            radius: length,
-            startAngle: .radians(Double(-CGFloat.pi / 2 + spread / 2)),
-            endAngle: .radians(Double(-CGFloat.pi / 2 - spread / 2)),
-            clockwise: true
-        )
-        path.closeSubpath()
-        return path
+    // 10m in screen pixels (court across = 15m)
+    private var visionRadius: CGFloat {
+        let metersPerPixel: CGFloat
+        if isPortrait {
+            metersPerPixel = courtSize.width / 15.0
+        } else if courtMode == .full {
+            metersPerPixel = courtSize.height / 15.0
+        } else {
+            metersPerPixel = courtSize.width / 15.0
+        }
+        return 10.0 * metersPerPixel
+    }
+
+    private func screenPos(for player: Player) -> CGPoint {
+        if isPortrait {
+            return CGPoint(x: origin.x + player.position.x * courtSize.width,
+                           y: origin.y + player.position.y * courtSize.height)
+        } else if courtMode == .half {
+            return CGPoint(x: origin.x + player.position.x * courtSize.width,
+                           y: origin.y + (1 - player.position.y) * courtSize.height)
+        } else {
+            return CGPoint(x: origin.x + player.position.y * courtSize.width,
+                           y: origin.y + player.position.x * courtSize.height)
+        }
+    }
+
+    var body: some View {
+        Canvas { context, size in
+            let spread: CGFloat = .pi / 3 // 60°
+            let segments = 30
+            let rings = 20
+
+            for player in players {
+                let center = screenPos(for: player)
+                let baseColor: Color = player.team == .home ? .blue : .red
+                let facing = player.facing
+
+                // Draw concentric arc strips from outer to inner for gradient effect
+                for r in (0..<rings).reversed() {
+                    let outerR = visionRadius * CGFloat(r + 1) / CGFloat(rings)
+                    let innerR = visionRadius * CGFloat(r) / CGFloat(rings)
+                    let alpha = 0.18 * (1.0 - CGFloat(r) / CGFloat(rings))
+
+                    var strip = Path()
+                    // Outer arc
+                    for i in 0...segments {
+                        let t = CGFloat(i) / CGFloat(segments)
+                        let angle = facing - spread / 2 + t * spread - .pi / 2
+                        let x = center.x + outerR * cos(angle)
+                        let y = center.y + outerR * sin(angle)
+                        if i == 0 { strip.move(to: CGPoint(x: x, y: y)) }
+                        else { strip.addLine(to: CGPoint(x: x, y: y)) }
+                    }
+                    // Inner arc (reversed)
+                    for i in (0...segments).reversed() {
+                        let t = CGFloat(i) / CGFloat(segments)
+                        let angle = facing - spread / 2 + t * spread - .pi / 2
+                        let x = center.x + innerR * cos(angle)
+                        let y = center.y + innerR * sin(angle)
+                        strip.addLine(to: CGPoint(x: x, y: y))
+                    }
+                    strip.closeSubpath()
+                    context.fill(strip, with: .color(baseColor.opacity(alpha)))
+                }
+            }
+        }
     }
 }
 
