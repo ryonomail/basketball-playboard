@@ -39,6 +39,7 @@ struct CourtEditorView: View {
             Button("OK") { applyNumberEdit() }
             Button("キャンセル", role: .cancel) { editingPlayerID = nil }
         }
+        .ignoresSafeArea(.container, edges: .bottom)
         .sheet(isPresented: $showSaveSheet) { saveSheet }
         .sheet(isPresented: $showLoadSheet) { loadSheet }
     }
@@ -46,12 +47,12 @@ struct CourtEditorView: View {
     // MARK: - Top Bar
 
     private var topBar: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             Button { showSaveSheet = true } label: {
-                Image(systemName: "square.and.arrow.down")
+                Image(systemName: "square.and.arrow.down").font(.system(size: 18))
             }
             Button { showLoadSheet = true } label: {
-                Image(systemName: "folder")
+                Image(systemName: "folder").font(.system(size: 18))
             }
 
             Spacer()
@@ -62,24 +63,24 @@ struct CourtEditorView: View {
                 }
             }
             .pickerStyle(.segmented)
-            .frame(width: 130)
+            .frame(width: 120)
 
             Spacer()
 
             Button {
                 if !lines.isEmpty { lines.removeLast() }
             } label: {
-                Image(systemName: "arrow.uturn.backward")
+                Image(systemName: "arrow.uturn.backward").font(.system(size: 18))
             }
             .disabled(lines.isEmpty)
 
             Button { resetBoard() } label: {
-                Image(systemName: "trash")
+                Image(systemName: "trash").font(.system(size: 18))
                     .foregroundColor(.red)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 4)
         .background(Color(.systemGray6))
     }
 
@@ -192,53 +193,46 @@ struct CourtEditorView: View {
     // MARK: - Tool Bar
 
     private var toolBar: some View {
-        VStack(spacing: 8) {
-            HStack(spacing: 12) {
-                Picker("モード", selection: $editorMode) {
-                    Image(systemName: "hand.draw").tag(EditorMode.move)
-                    Image(systemName: "pencil.tip").tag(EditorMode.draw)
-                }
-                .pickerStyle(.segmented)
-                .frame(width: 100)
-
-                if editorMode == .draw {
-                    Divider().frame(height: 28)
-
-                    ForEach(LineType.allCases, id: \.self) { type in
-                        Button {
-                            selectedLineType = type
-                        } label: {
-                            VStack(spacing: 2) {
-                                Image(systemName: type.systemImage)
-                                    .font(.system(size: 16))
-                                Text(type.displayName)
-                                    .font(.system(size: 9))
-                            }
-                            .foregroundColor(selectedLineType == type ? .blue : .secondary)
-                        }
-                    }
-
-                    Divider().frame(height: 28)
-
-                    ForEach(LineColor.allCases, id: \.self) { lc in
-                        Circle()
-                            .fill(lc.color)
-                            .frame(width: 22, height: 22)
-                            .overlay(
-                                Circle().stroke(selectedLineColor == lc ? Color.white : Color.clear, lineWidth: 2)
-                            )
-                            .overlay(
-                                Circle().stroke(selectedLineColor == lc ? Color.blue : Color.gray.opacity(0.3), lineWidth: selectedLineColor == lc ? 3 : 1)
-                            )
-                            .onTapGesture { selectedLineColor = lc }
-                    }
-                }
-
-                Spacer()
+        HStack(spacing: 8) {
+            Picker("モード", selection: $editorMode) {
+                Image(systemName: "hand.draw").tag(EditorMode.move)
+                Image(systemName: "pencil.tip").tag(EditorMode.draw)
             }
-            .padding(.horizontal, 12)
+            .pickerStyle(.segmented)
+            .frame(width: 90)
+
+            if editorMode == .draw {
+                Divider().frame(height: 24)
+
+                ForEach(LineType.allCases, id: \.self) { type in
+                    Button {
+                        selectedLineType = type
+                    } label: {
+                        Image(systemName: type.systemImage)
+                            .font(.system(size: 15))
+                            .foregroundColor(selectedLineType == type ? .blue : .secondary)
+                            .frame(width: 28, height: 28)
+                    }
+                }
+
+                Divider().frame(height: 24)
+
+                ForEach(LineColor.allCases, id: \.self) { lc in
+                    Circle()
+                        .fill(lc.color)
+                        .frame(width: 20, height: 20)
+                        .overlay(
+                            Circle().stroke(selectedLineColor == lc ? Color.blue : Color.clear, lineWidth: 2.5)
+                                .frame(width: 26, height: 26)
+                        )
+                        .onTapGesture { selectedLineColor = lc }
+                }
+            }
+
+            Spacer()
         }
-        .padding(.vertical, 8)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 4)
         .background(Color(.systemGray6))
     }
 
@@ -312,11 +306,9 @@ struct CourtEditorView: View {
         let ratio = courtMode.aspectRatio
         let availableRatio = size.width / size.height
         if availableRatio > ratio {
-            let h = size.height * 0.94
-            return CGSize(width: h * ratio, height: h)
+            return CGSize(width: size.height * ratio, height: size.height)
         } else {
-            let w = size.width * 0.94
-            return CGSize(width: w, height: w / ratio)
+            return CGSize(width: size.width, height: size.width / ratio)
         }
     }
 
