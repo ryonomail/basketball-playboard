@@ -24,7 +24,8 @@ struct LineDrawingView: View {
                     drawArrowhead(context: context, points: pts, color: color)
 
                 case .dribble:
-                    let wavyPath = wavyLine(points: pts, amplitude: 4, wavelength: 10)
+                    let trimmed = trimEnd(pts, by: 14)
+                    let wavyPath = wavyLine(points: trimmed, amplitude: 4, wavelength: 10)
                     context.stroke(wavyPath, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                     drawArrowhead(context: context, points: pts, color: color)
 
@@ -64,6 +65,29 @@ struct LineDrawingView: View {
         }
         if let last = points.last { path.addLine(to: last) }
         return path
+    }
+
+    private func trimEnd(_ points: [CGPoint], by distance: CGFloat) -> [CGPoint] {
+        guard points.count >= 2 else { return points }
+        var remaining = distance
+        var result = points
+        while result.count >= 2 && remaining > 0 {
+            let last = result[result.count - 1]
+            let prev = result[result.count - 2]
+            let segLen = hypot(last.x - prev.x, last.y - prev.y)
+            if segLen <= remaining {
+                remaining -= segLen
+                result.removeLast()
+            } else {
+                let t = (segLen - remaining) / segLen
+                result[result.count - 1] = CGPoint(
+                    x: prev.x + (last.x - prev.x) * t,
+                    y: prev.y + (last.y - prev.y) * t
+                )
+                break
+            }
+        }
+        return result
     }
 
     private func drawArrowhead(context: GraphicsContext, points: [CGPoint], color: Color) {
