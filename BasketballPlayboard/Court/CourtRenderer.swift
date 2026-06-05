@@ -122,12 +122,14 @@ struct CourtRenderer: Shape {
         // Right straight
         addLine(&path, from: pt(15 - sideAcross, al(0), w, h), to: pt(15 - sideAcross, al(meetAlongFromBase), w, h))
 
-        // Arc
+        // Arc: parameterized as across = bx - R*cos(θ), along = 1.575 + R*sin(θ)
+        // Left meeting:  cos(θ) = distFromCenter/R → θ = arcAngle (small, near 0)
+        // Right meeting: cos(θ) = -distFromCenter/R → θ = π - arcAngle (near π)
         let arcAngle = acos(distFromCenter / threeR)
         let arcSegs = 50
         for i in 0...arcSegs {
             let t = CGFloat(i) / CGFloat(arcSegs)
-            let angle = (CGFloat.pi / 2 + arcAngle) - t * 2 * arcAngle
+            let angle = arcAngle + t * (CGFloat.pi - 2 * arcAngle)
             let ca = bx - threeR * cos(angle)
             let rawAlong = 1.575 + threeR * sin(angle)
             let sp = pt(ca, al(rawAlong), w, h)
