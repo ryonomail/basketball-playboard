@@ -23,7 +23,6 @@ struct CourtEditorView: View {
     @State private var showSaveSheet = false
     @State private var showLoadSheet = false
     @State private var saveName: String = ""
-    @State private var isTouching = false
 
     var body: some View {
         GeometryReader { geo in
@@ -33,9 +32,9 @@ struct CourtEditorView: View {
                 Color(.systemGray5).ignoresSafeArea(.all)
 
                 if isPortrait {
-                    portraitLayout(geo: geo, isPortrait: true)
+                    portraitLayout(geo: geo)
                 } else {
-                    landscapeLayout(geo: geo, isPortrait: false)
+                    landscapeLayout(geo: geo)
                 }
             }
         }
@@ -54,70 +53,114 @@ struct CourtEditorView: View {
 
     // MARK: - Landscape
 
-    private func landscapeLayout(geo: GeometryProxy, isPortrait: Bool) -> some View {
-        ZStack {
-            courtView(geoSize: geo.size, isPortrait: false)
-                .ignoresSafeArea(.all)
-
-            if !isTouching {
-                HStack {
-                    VStack(spacing: 12) {
-                        floatingBtn("square.and.arrow.down") { showSaveSheet = true }
-                        floatingBtn("folder") { showLoadSheet = true }
-                        floatingBtn("arrow.uturn.backward") { if !lines.isEmpty { lines.removeLast() } }
-                        floatingBtn("trash", color: .red) { resetBoard() }
-                        Spacer()
-                        courtModeToggle
-                    }
-                    Spacer()
-                }
-                .padding(.leading, 16)
-                .padding(.top, 12)
-                .padding(.bottom, 12)
-
-                HStack {
-                    Spacer()
-                    toolPanel(isPortrait: false)
-                }
-                .padding(.trailing, 16)
-                .padding(.top, 12)
-                .padding(.bottom, 12)
+    private func landscapeLayout(geo: GeometryProxy) -> some View {
+        HStack(spacing: 0) {
+            // Left toolbar: actions + court mode
+            VStack(spacing: 10) {
+                actionButtons
+                Spacer()
+                courtModeToggle
             }
+            .frame(width: 52)
+            .padding(.vertical, 8)
+            .padding(.leading, 4)
+
+            // Court
+            courtView(isPortrait: false)
+
+            // Right toolbar: draw tools
+            drawToolbar(horizontal: false)
+                .frame(width: 52)
+                .padding(.vertical, 8)
+                .padding(.trailing, 4)
         }
     }
 
     // MARK: - Portrait
 
-    private func portraitLayout(geo: GeometryProxy, isPortrait: Bool) -> some View {
+    private func portraitLayout(geo: GeometryProxy) -> some View {
         VStack(spacing: 0) {
-            if !isTouching {
-                HStack(spacing: 8) {
-                    floatingBtn("square.and.arrow.down") { showSaveSheet = true }
-                    floatingBtn("folder") { showLoadSheet = true }
-                    floatingBtn("arrow.uturn.backward") { if !lines.isEmpty { lines.removeLast() } }
-                    floatingBtn("trash", color: .red) { resetBoard() }
-                    Spacer()
-                    courtModeToggle
+            // Top bar: actions + court mode
+            HStack(spacing: 8) {
+                actionButtons
+                Spacer()
+                courtModeToggle
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+
+            // Court
+            courtView(isPortrait: true)
+
+            // Bottom bar: draw tools
+            drawToolbar(horizontal: true)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 6)
+        }
+    }
+
+    // MARK: - Shared UI
+
+    private var actionButtons: some View {
+        Group {
+            floatingBtn("square.and.arrow.down") { showSaveSheet = true }
+            floatingBtn("folder") { showLoadSheet = true }
+            floatingBtn("arrow.uturn.backward") { if !lines.isEmpty { lines.removeLast() } }
+            floatingBtn("trash", color: .red) { resetBoard() }
+        }
+    }
+
+    @ViewBuilder
+    private func drawToolbar(horizontal: Bool) -> some View {
+        let content = Group {
+            modeBtn("hand.draw", mode: .move)
+            modeBtn("pencil.tip", mode: .draw)
+
+            if editorMode == .draw {
+                if horizontal {
+                    Divider().frame(height: 26)
+                } else {
+                    Divider().frame(width: 28)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .padding(.bottom, 4)
-            }
 
-            courtView(geoSize: CGSize(
-                width: geo.size.width,
-                height: isTouching ? geo.size.height : geo.size.height - 80
-            ), isPortrait: true)
+                ForEach(LineType.allCases, id: \.self) { type in
+                    Button { selectedLineType = type } label: {
+                        LinePreview(type: type)
+                            .frame(width: 32, height: 32)
+                            .background(selectedLineType == type ? Color.blue.opacity(0.2) : Color.clear)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(selectedLineType == type ? Color.blue : Color.clear, lineWidth: 1.5)
+                            )
+                            .cornerRadius(6)
+                    }
+                }
 
-            if !isTouching {
-                toolStrip(isPortrait: true)
+                if horizontal {
+                    Divider().frame(height: 26)
+                } else {
+                    Divider().frame(width: 28)
+                }
+
+                ForEach(LineColor.allCases, id: \.self) { lc in
+                    Circle().fill(lc.color).frame(width: 22, height: 22)
+                        .overlay(Circle().stroke(selectedLineColor == lc ? .white : .clear, lineWidth: 2))
+                        .shadow(color: selectedLineColor == lc ? lc.color.opacity(0.6) : .clear, radius: 3)
+                        .onTapGesture { selectedLineColor = lc }
+                }
             }
+        }
+
+        if horizontal {
+            HStack(spacing: 6) { content }
+        } else {
+            VStack(spacing: 6) { content }
         }
     }
 
     // MARK: - Court
 
-    private func courtView(geoSize: CGSize, isPortrait: Bool) -> some View {
+    private func courtView(isPortrait: Bool) -> some View {
         GeometryReader { geo in
             let cs = courtSize(in: geo.size, isPortrait: isPortrait)
             let origin = CGPoint(
@@ -153,11 +196,10 @@ struct CourtEditorView: View {
                         editorMode == .move ?
                         DragGesture()
                             .onChanged { v in
-                                isTouching = true
                                 draggingBall = true
                                 ball.position = screenToCourt(v.location, cs: cs, origin: origin, isPortrait: isPortrait)
                             }
-                            .onEnded { _ in isTouching = false; draggingBall = false }
+                            .onEnded { _ in draggingBall = false }
                         : nil
                     )
 
@@ -169,7 +211,6 @@ struct CourtEditorView: View {
                         isSelected: selectedPlayerID == player.id,
                         screenPosition: screenPos,
                         onMove: editorMode == .move ? { location in
-                            isTouching = true
                             selectedPlayerID = player.id
                             if let idx = players.firstIndex(where: { $0.id == player.id }) {
                                 players[idx].position = screenToCourt(location, cs: cs, origin: origin, isPortrait: isPortrait)
@@ -180,7 +221,7 @@ struct CourtEditorView: View {
                                 players[idx].facing = angle
                             }
                         },
-                        onMoveEnd: { isTouching = false }
+                        onMoveEnd: {}
                     )
                     .simultaneousGesture(
                         LongPressGesture(minimumDuration: 0.5)
@@ -196,7 +237,6 @@ struct CourtEditorView: View {
                 editorMode == .draw ?
                 DragGesture(minimumDistance: 1)
                     .onChanged { v in
-                        isTouching = true
                         let courtPt = screenToCourt(v.location, cs: cs, origin: origin, isPortrait: isPortrait)
                         if currentDrawing == nil {
                             currentDrawing = DrawingLine(type: selectedLineType, lineColor: selectedLineColor, points: [courtPt])
@@ -205,7 +245,6 @@ struct CourtEditorView: View {
                         }
                     }
                     .onEnded { _ in
-                        isTouching = false
                         if var line = currentDrawing, line.points.count >= 2 {
                             line.points = simplify(line.points, tolerance: 0.004)
                             lines.append(line)
@@ -218,19 +257,13 @@ struct CourtEditorView: View {
     }
 
     // MARK: - Coordinate Mapping
-    // Player coords: x = across (sideline-to-sideline 0-1), y = along (baseline-to-halfcourt 0-1)
-    // Landscape: across→screenX, along→screenY
-    // Portrait:  along→screenX, across→screenY
 
     private func courtToScreen(_ pos: CGPoint, cs: CGSize, origin: CGPoint, isPortrait: Bool) -> CGPoint {
         if isPortrait {
-            // across→X, along→Y
             return CGPoint(x: origin.x + pos.x * cs.width, y: origin.y + pos.y * cs.height)
         } else if courtMode == .half {
-            // across→X, along→Y inverted (endline at bottom)
             return CGPoint(x: origin.x + pos.x * cs.width, y: origin.y + (1 - pos.y) * cs.height)
         } else {
-            // along→X, across→Y (full court horizontal)
             return CGPoint(x: origin.x + pos.y * cs.width, y: origin.y + pos.x * cs.height)
         }
     }
@@ -274,7 +307,7 @@ struct CourtEditorView: View {
             ForEach(CourtMode.allCases, id: \.self) { Text($0.displayName).tag($0) }
         }
         .pickerStyle(.segmented)
-        .frame(width: 110)
+        .frame(width: 100)
     }
 
     private func modeBtn(_ icon: String, mode: EditorMode) -> some View {
@@ -286,69 +319,6 @@ struct CourtEditorView: View {
                 .background(editorMode == mode ? Color.blue : Color(.systemGray5))
                 .cornerRadius(7)
         }
-    }
-
-    private func toolPanel(isPortrait: Bool) -> some View {
-        VStack(spacing: 8) {
-            modeBtn("hand.draw", mode: .move)
-            modeBtn("pencil.tip", mode: .draw)
-
-            if editorMode == .draw {
-                Divider().frame(width: 28)
-                ForEach(LineType.allCases, id: \.self) { type in
-                    Button { selectedLineType = type } label: {
-                        Image(systemName: type.systemImage)
-                            .font(.system(size: 14))
-                            .foregroundColor(selectedLineType == type ? .white : .secondary)
-                            .frame(width: 32, height: 32)
-                            .background(selectedLineType == type ? Color.blue : Color.clear)
-                            .cornerRadius(7)
-                    }
-                }
-                Divider().frame(width: 28)
-                ForEach(LineColor.allCases, id: \.self) { lc in
-                    Circle().fill(lc.color).frame(width: 20, height: 20)
-                        .overlay(Circle().stroke(selectedLineColor == lc ? .white : .clear, lineWidth: 2))
-                        .shadow(color: selectedLineColor == lc ? lc.color.opacity(0.5) : .clear, radius: 3)
-                        .onTapGesture { selectedLineColor = lc }
-                }
-            }
-        }
-        .padding(6)
-        .background(.ultraThinMaterial)
-        .cornerRadius(10)
-    }
-
-    private func toolStrip(isPortrait: Bool) -> some View {
-        HStack(spacing: 6) {
-            modeBtn("hand.draw", mode: .move)
-            modeBtn("pencil.tip", mode: .draw)
-
-            if editorMode == .draw {
-                Divider().frame(height: 26)
-                ForEach(LineType.allCases, id: \.self) { type in
-                    Button { selectedLineType = type } label: {
-                        Image(systemName: type.systemImage)
-                            .font(.system(size: 14))
-                            .foregroundColor(selectedLineType == type ? .white : .secondary)
-                            .frame(width: 30, height: 30)
-                            .background(selectedLineType == type ? Color.blue : Color.clear)
-                            .cornerRadius(6)
-                    }
-                }
-                Divider().frame(height: 26)
-                ForEach(LineColor.allCases, id: \.self) { lc in
-                    Circle().fill(lc.color).frame(width: 20, height: 20)
-                        .overlay(Circle().stroke(selectedLineColor == lc ? .white : .clear, lineWidth: 2))
-                        .shadow(color: selectedLineColor == lc ? lc.color.opacity(0.5) : .clear, radius: 3)
-                        .onTapGesture { selectedLineColor = lc }
-                }
-            }
-            Spacer()
-        }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 6)
-        .background(.ultraThinMaterial)
     }
 
     // MARK: - Save / Load
@@ -438,5 +408,52 @@ struct CourtEditorView: View {
         }
         result.append(points.last!)
         return result
+    }
+}
+
+// MARK: - Line Preview (shows actual line style instead of abstract icons)
+
+struct LinePreview: View {
+    let type: LineType
+
+    var body: some View {
+        Canvas { context, size in
+            let y = size.height / 2
+            let inset: CGFloat = 4
+            var path = Path()
+            path.move(to: CGPoint(x: inset, y: y))
+            path.addLine(to: CGPoint(x: size.width - inset, y: y))
+
+            let color: Color = .primary
+            switch type {
+            case .cut:
+                context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+                drawArrow(context: context, at: CGPoint(x: size.width - inset, y: y), angle: 0, color: color)
+            case .pass:
+                context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round, dash: [6, 4]))
+                drawArrow(context: context, at: CGPoint(x: size.width - inset, y: y), angle: 0, color: color)
+            case .dribble:
+                context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round, dash: [2, 4]))
+                drawArrow(context: context, at: CGPoint(x: size.width - inset, y: y), angle: 0, color: color)
+            case .screen:
+                context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+                var bar = Path()
+                let bx = size.width - inset
+                bar.move(to: CGPoint(x: bx, y: y - 6))
+                bar.addLine(to: CGPoint(x: bx, y: y + 6))
+                context.stroke(bar, with: .color(color), style: StrokeStyle(lineWidth: 3, lineCap: .round))
+            }
+        }
+    }
+
+    private func drawArrow(context: GraphicsContext, at tip: CGPoint, angle: CGFloat, color: Color) {
+        let len: CGFloat = 7
+        let spread: CGFloat = .pi / 4
+        var arrow = Path()
+        arrow.move(to: tip)
+        arrow.addLine(to: CGPoint(x: tip.x - len * cos(angle - spread), y: tip.y - len * sin(angle - spread)))
+        arrow.move(to: tip)
+        arrow.addLine(to: CGPoint(x: tip.x - len * cos(angle + spread), y: tip.y - len * sin(angle + spread)))
+        context.stroke(arrow, with: .color(color), style: StrokeStyle(lineWidth: 2, lineCap: .round))
     }
 }
