@@ -24,7 +24,8 @@ struct CourtEditorView: View {
     @State private var showSaveSheet = false
     @State private var showLoadSheet = false
     @State private var saveName: String = ""
-    @State private var showVisionCones: Bool = true
+    @State private var showHomeVision: Bool = true
+    @State private var showAwayVision: Bool = true
 
     var body: some View {
         GeometryReader { geo in
@@ -117,8 +118,26 @@ struct CourtEditorView: View {
             floatingBtn("trash", color: .red) { resetBoard() }
             addPlayerBtn(team: .home)
             addPlayerBtn(team: .away)
-            floatingBtn("eye\(showVisionCones ? "" : ".slash")",
-                        color: showVisionCones ? .blue : .secondary) { showVisionCones.toggle() }
+            Button {
+                showHomeVision.toggle()
+            } label: {
+                Image(systemName: showHomeVision ? "eye" : "eye.slash")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.white)
+                    .frame(width: 34, height: 34)
+                    .background(showHomeVision ? Color.blue : Color.blue.opacity(0.3))
+                    .cornerRadius(8)
+            }
+            Button {
+                showAwayVision.toggle()
+            } label: {
+                Image(systemName: showAwayVision ? "eye" : "eye.slash")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.white)
+                    .frame(width: 34, height: 34)
+                    .background(showAwayVision ? Color.red : Color.red.opacity(0.3))
+                    .cornerRadius(8)
+            }
         }
     }
 
@@ -211,9 +230,12 @@ struct CourtEditorView: View {
                     .position(x: geo.size.width / 2, y: geo.size.height / 2)
 
                 // Vision cones (10m range, gradient fade, clipped to court)
-                if showVisionCones {
+                if showHomeVision || showAwayVision {
+                    let visiblePlayers = players.filter {
+                        ($0.team == .home && showHomeVision) || ($0.team == .away && showAwayVision)
+                    }
                     VisionConeLayer(
-                        players: players,
+                        players: visiblePlayers,
                         courtSize: cs,
                         origin: origin,
                         isPortrait: isPortrait,
