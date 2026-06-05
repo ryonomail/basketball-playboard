@@ -3,7 +3,6 @@ import SwiftUI
 struct PlayerMarkerView: View {
     let player: Player
     let isSelected: Bool
-    var onTapNumber: (() -> Void)? = nil
 
     private var teamColor: Color {
         player.team == .home ? .blue : .red
@@ -34,7 +33,6 @@ struct PlayerMarkerView: View {
                 )
         }
         .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-        .onTapGesture { onTapNumber?() }
     }
 }
 

@@ -11,168 +11,164 @@ enum CourtMode: String, CaseIterable {
         }
     }
 
-    var aspectRatio: CGFloat {
+    func aspectRatio(landscape: Bool) -> CGFloat {
         switch self {
-        case .half: return 15.0 / 14.0
-        case .full: return 15.0 / 28.0
+        case .half:
+            // FIBA half: 15m across × 14m along
+            return landscape ? 15.0 / 14.0 : 14.0 / 15.0
+        case .full:
+            // FIBA full: 15m across × 28m along
+            return landscape ? 28.0 / 15.0 : 15.0 / 28.0
+        }
+    }
+
+    var courtLength: CGFloat {
+        switch self {
+        case .half: return 14.0
+        case .full: return 28.0
         }
     }
 }
 
 struct CourtRenderer: Shape {
     let mode: CourtMode
+    let isPortrait: Bool
 
-    // FIBA court: 28m x 15m
-    // All positions normalized: x = across court (0-15m mapped to 0-1), y = along court (0-14m or 0-28m mapped to 0-1)
-    // Basket at top (y=0 side)
+    private var courtLen: CGFloat { mode.courtLength }
+
+    // Map court coordinates (across: 0-15m, along: 0-courtLen) to screen point
+    // In landscape: across→X, along→Y
+    // In portrait:  along→X, across→Y
+    private func pt(_ across: CGFloat, _ along: CGFloat, _ w: CGFloat, _ h: CGFloat) -> CGPoint {
+        let ax = across / 15.0
+        let ay = along / courtLen
+        return isPortrait
+            ? CGPoint(x: ay * w, y: ax * h)
+            : CGPoint(x: ax * w, y: ay * h)
+    }
 
     func path(in rect: CGRect) -> Path {
         var path = Path()
         let w = rect.width
         let h = rect.height
 
-        // Court outline
-        path.addRect(CGRect(x: 0, y: 0, width: w, height: h))
+        // Outline
+        path.addRect(CGRect(x: 1, y: 1, width: w - 2, height: h - 2))
 
         switch mode {
         case .half:
-            drawHalfCourt(path: &path, w: w, h: h, basketY: 0, baselineY: 0, direction: 1)
-            // Center line at bottom
-            path.move(to: CGPoint(x: 0, y: h))
-            path.addLine(to: CGPoint(x: w, y: h))
-            // Half of center circle at bottom
-            let centerCircleR = (1.8 / 14.0) * h
-            path.addArc(
-                center: CGPoint(x: w / 2, y: h),
-                radius: centerCircleR,
-                startAngle: .degrees(180),
-                endAngle: .degrees(0),
-                clockwise: true
-            )
+            drawHalf(&path, w: w, h: h, baseAlong: 0, dir: 1)
+            // Half-court line
+            addLine(&path, from: pt(0, 14, w, h), to: pt(15, 14, w, h))
+            // Half center circle
+            addArc(&path, center: (7.5, 14), radius: 1.8, startDeg: 0, endDeg: 180, dir: 1, w: w, h: h)
 
         case .full:
+            drawHalf(&path, w: w, h: h, baseAlong: 0, dir: 1)
+            drawHalf(&path, w: w, h: h, baseAlong: 28, dir: -1)
             // Center line
-            path.move(to: CGPoint(x: 0, y: h / 2))
-            path.addLine(to: CGPoint(x: w, y: h / 2))
-            // Center circle
-            let centerCircleR = (1.8 / 28.0) * h
-            path.addEllipse(in: CGRect(
-                x: w / 2 - centerCircleR, y: h / 2 - centerCircleR,
-                width: centerCircleR * 2, height: centerCircleR * 2
-            ))
-            // Top half (basket at top)
-            drawHalfCourt(path: &path, w: w, h: h, basketY: 0, baselineY: 0, direction: 1)
-            // Bottom half (basket at bottom)
-            drawHalfCourt(path: &path, w: w, h: h, basketY: h, baselineY: h, direction: -1)
+            addLine(&path, from: pt(0, 14, w, h), to: pt(15, 14, w, h))
+            // Full center circle
+            addCircle(&path, center: (7.5, 14), radius: 1.8, w: w, h: h)
         }
 
         return path
     }
 
-    private func drawHalfCourt(path: inout Path, w: CGFloat, h: CGFloat, basketY: CGFloat, baselineY: CGFloat, direction: CGFloat) {
-        let courtLength: CGFloat = mode == .half ? 14.0 : 28.0
+    private func drawHalf(_ path: inout Path, w: CGFloat, h: CGFloat, baseAlong: CGFloat, dir: CGFloat) {
+        func al(_ m: CGFloat) -> CGFloat { baseAlong + dir * m }
 
-        func mY(_ meters: CGFloat) -> CGFloat {
-            baselineY + direction * (meters / courtLength) * h
-        }
-        func mX(_ meters: CGFloat) -> CGFloat {
-            (meters / 15.0) * w
-        }
+        let bx: CGFloat = 7.5 // basket across center
+        let basketAlong = al(1.575)
 
-        let basketCenterY = mY(1.575)
-        let basketCenterX = w / 2
+        // --- Paint (4.9m wide × 5.8m from baseline) ---
+        let paintTL = pt(bx - 2.45, al(0), w, h)
+        let paintBR = pt(bx + 2.45, al(5.8), w, h)
+        path.addRect(normalizedRect(paintTL, paintBR))
 
-        // --- Paint / Key (4.9m wide, 5.8m from baseline) ---
-        let paintW = mX(4.9)
-        let paintLeft = basketCenterX - paintW / 2
-        let paintTop = baselineY
-        let paintBottom = mY(5.8)
-        let paintH = abs(paintBottom - paintTop)
-        let paintRect = CGRect(
-            x: paintLeft,
-            y: min(paintTop, paintBottom),
-            width: paintW,
-            height: paintH
-        )
-        path.addRect(paintRect)
-
-        // --- Free throw circle (radius 1.8m, centered at free throw line) ---
-        let ftR = abs(mY(1.8) - mY(0))
-        let ftCenterY = mY(5.8)
-        path.addEllipse(in: CGRect(
-            x: basketCenterX - ftR, y: ftCenterY - ftR,
-            width: ftR * 2, height: ftR * 2
-        ))
+        // --- Free throw circle (1.8m radius at free throw line) ---
+        addCircle(&path, center: (bx, al(5.8)), radius: 1.8, w: w, h: h)
 
         // --- Restricted area arc (1.25m from basket center) ---
-        let raR = abs(mY(1.25) - mY(0))
-        let startDeg: Double = direction > 0 ? 0 : 180
-        let endDeg: Double = direction > 0 ? 180 : 360
-        path.addArc(
-            center: CGPoint(x: basketCenterX, y: basketCenterY),
-            radius: raR,
-            startAngle: .degrees(startDeg),
-            endAngle: .degrees(endDeg),
-            clockwise: direction < 0
-        )
-
-        // --- Basket ring (inner diameter 0.45m) ---
-        let ringR = mX(0.45 / 2)
-        path.addEllipse(in: CGRect(
-            x: basketCenterX - ringR, y: basketCenterY - ringR,
-            width: ringR * 2, height: ringR * 2
-        ))
-
-        // --- Backboard (1.8m wide, at 1.2m from baseline) ---
-        let bbY = mY(1.2)
-        let bbHalfW = mX(1.8 / 2)
-        path.move(to: CGPoint(x: basketCenterX - bbHalfW, y: bbY))
-        path.addLine(to: CGPoint(x: basketCenterX + bbHalfW, y: bbY))
-
-        // --- Three-point line ---
-        // Arc: 6.75m from basket center
-        // Straight parts: 0.9m from sideline, from baseline to where arc begins
-        let threeR = mX(6.75) // Use X scale for radius since it's a distance from center
-        // But the arc is a circle in real court space, which gets distorted in our non-square mapping
-        // To be accurate, we use separate x/y radii
-        let threeRx = mX(6.75)
-        let threeRy = abs(mY(6.75) - mY(0))
-
-        let sideX = mX(0.9)
-        let rightSideX = w - mX(0.9)
-
-        // Calculate where the arc meets the straight line (at x = 0.9m and x = 14.1m from left)
-        // Circle: (x - 7.5)^2 + (y - 1.575)^2 = 6.75^2
-        // At x = 0.9: (0.9 - 7.5)^2 + (y - 1.575)^2 = 6.75^2
-        // (y - 1.575)^2 = 6.75^2 - 6.6^2 = 45.5625 - 43.56 = 2.0025
-        // y - 1.575 = 1.4151... → y ≈ 2.99m
-        let arcMeetY = mY(2.99)
-
-        // Left straight
-        path.move(to: CGPoint(x: sideX, y: baselineY))
-        path.addLine(to: CGPoint(x: sideX, y: arcMeetY))
-
-        // Arc (using elliptical path for correct proportions)
-        // Angle at the straight line meeting point
-        let angleAtSide = asin((6.6) / 6.75) // angle from top of circle
-        let startAngleRad = Double.pi / 2 + Double(angleAtSide)
-        let endAngleRad = Double.pi / 2 - Double(angleAtSide)
-
-        let arcSegments = 40
-        for i in 0...arcSegments {
-            let t = Double(i) / Double(arcSegments)
-            let angle = startAngleRad + t * (endAngleRad - startAngleRad)
-            let px = basketCenterX - CGFloat(cos(angle)) * threeRx
-            let py = basketCenterY + direction * CGFloat(sin(angle)) * threeRy
-            if i == 0 {
-                path.move(to: CGPoint(x: px, y: py))
-            } else {
-                path.addLine(to: CGPoint(x: px, y: py))
-            }
+        let raSegs = 30
+        for i in 0...raSegs {
+            let t = CGFloat(i) / CGFloat(raSegs)
+            let angle = CGFloat.pi * t
+            let ca = bx - 1.25 * cos(angle)
+            let cl = al(1.575 + 1.25 * sin(angle))
+            let sp = pt(ca, cl, w, h)
+            if i == 0 { path.move(to: sp) } else { path.addLine(to: sp) }
         }
 
+        // --- Basket ring (diameter 0.45m) ---
+        let basketPt = pt(bx, basketAlong, w, h)
+        let ringScreenR: CGFloat = 4
+        path.addEllipse(in: CGRect(x: basketPt.x - ringScreenR, y: basketPt.y - ringScreenR,
+                                   width: ringScreenR * 2, height: ringScreenR * 2))
+
+        // --- Backboard (1.8m wide at 1.2m from baseline) ---
+        addLine(&path, from: pt(bx - 0.9, al(1.2), w, h), to: pt(bx + 0.9, al(1.2), w, h))
+
+        // --- Three-point line ---
+        let threeR: CGFloat = 6.75
+        let sideAcross: CGFloat = 0.9
+        let distFromCenter = bx - sideAcross // 6.6
+
+        // Arc meet point
+        let meetAlongFromBase = 1.575 + sqrt(threeR * threeR - distFromCenter * distFromCenter)
+
+        // Left straight
+        addLine(&path, from: pt(sideAcross, al(0), w, h), to: pt(sideAcross, al(meetAlongFromBase), w, h))
         // Right straight
-        path.move(to: CGPoint(x: rightSideX, y: baselineY))
-        path.addLine(to: CGPoint(x: rightSideX, y: arcMeetY))
+        addLine(&path, from: pt(15 - sideAcross, al(0), w, h), to: pt(15 - sideAcross, al(meetAlongFromBase), w, h))
+
+        // Arc
+        let arcAngle = acos(distFromCenter / threeR)
+        let arcSegs = 50
+        for i in 0...arcSegs {
+            let t = CGFloat(i) / CGFloat(arcSegs)
+            let angle = (CGFloat.pi / 2 + arcAngle) - t * 2 * arcAngle
+            let ca = bx - threeR * cos(angle)
+            let rawAlong = 1.575 + threeR * sin(angle)
+            let sp = pt(ca, al(rawAlong), w, h)
+            if i == 0 { path.move(to: sp) } else { path.addLine(to: sp) }
+        }
+    }
+
+    // MARK: - Drawing Helpers
+
+    private func addLine(_ path: inout Path, from: CGPoint, to: CGPoint) {
+        path.move(to: from)
+        path.addLine(to: to)
+    }
+
+    private func addCircle(_ path: inout Path, center: (CGFloat, CGFloat), radius: CGFloat, w: CGFloat, h: CGFloat) {
+        let segs = 40
+        for i in 0...segs {
+            let angle = CGFloat.pi * 2 * CGFloat(i) / CGFloat(segs)
+            let ca = center.0 + radius * cos(angle)
+            let cl = center.1 + radius * sin(angle)
+            let sp = pt(ca, cl, w, h)
+            if i == 0 { path.move(to: sp) } else { path.addLine(to: sp) }
+        }
+    }
+
+    private func addArc(_ path: inout Path, center: (CGFloat, CGFloat), radius: CGFloat, startDeg: CGFloat, endDeg: CGFloat, dir: CGFloat, w: CGFloat, h: CGFloat) {
+        let segs = 30
+        let startRad = startDeg * .pi / 180
+        let endRad = endDeg * .pi / 180
+        for i in 0...segs {
+            let t = CGFloat(i) / CGFloat(segs)
+            let angle = startRad + t * (endRad - startRad)
+            let ca = center.0 + radius * cos(angle)
+            let cl = center.1 + dir * radius * sin(angle)
+            let sp = pt(ca, cl, w, h)
+            if i == 0 { path.move(to: sp) } else { path.addLine(to: sp) }
+        }
+    }
+
+    private func normalizedRect(_ a: CGPoint, _ b: CGPoint) -> CGRect {
+        CGRect(x: min(a.x, b.x), y: min(a.y, b.y),
+               width: abs(b.x - a.x), height: abs(b.y - a.y))
     }
 }

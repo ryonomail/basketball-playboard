@@ -2,13 +2,14 @@ import SwiftUI
 
 struct LineDrawingView: View {
     let lines: [DrawingLine]
+    var isPortrait: Bool = false
 
     var body: some View {
         Canvas { context, size in
             for line in lines {
                 guard line.points.count >= 2 else { continue }
                 let color = line.lineColor.color
-                let pts = line.points.map { CGPoint(x: $0.x * size.width, y: $0.y * size.height) }
+                let pts = line.points.map { mapPoint($0, size: size) }
 
                 switch line.type {
                 case .cut:
@@ -35,16 +36,20 @@ struct LineDrawingView: View {
         }
     }
 
+    private func mapPoint(_ p: CGPoint, size: CGSize) -> CGPoint {
+        isPortrait
+            ? CGPoint(x: p.y * size.width, y: p.x * size.height)
+            : CGPoint(x: p.x * size.width, y: p.y * size.height)
+    }
+
     private func smoothPath(points: [CGPoint]) -> Path {
         var path = Path()
         guard let first = points.first else { return path }
         path.move(to: first)
-
         if points.count == 2 {
             path.addLine(to: points[1])
             return path
         }
-
         for i in 1..<points.count {
             let mid = CGPoint(
                 x: (points[i - 1].x + points[i].x) / 2,
@@ -52,9 +57,7 @@ struct LineDrawingView: View {
             )
             path.addQuadCurve(to: mid, control: points[i - 1])
         }
-        if let last = points.last {
-            path.addLine(to: last)
-        }
+        if let last = points.last { path.addLine(to: last) }
         return path
     }
 
@@ -65,7 +68,6 @@ struct LineDrawingView: View {
         let angle = atan2(tip.y - prev.y, tip.x - prev.x)
         let len: CGFloat = 12
         let spread: CGFloat = .pi / 5
-
         var arrow = Path()
         arrow.move(to: tip)
         arrow.addLine(to: CGPoint(x: tip.x - len * cos(angle - spread), y: tip.y - len * sin(angle - spread)))
@@ -80,7 +82,6 @@ struct LineDrawingView: View {
         let prev = points[points.count - 2]
         let angle = atan2(tip.y - prev.y, tip.x - prev.x)
         let barLen: CGFloat = 10
-
         var bar = Path()
         bar.move(to: CGPoint(x: tip.x - barLen * cos(angle + .pi / 2), y: tip.y - barLen * sin(angle + .pi / 2)))
         bar.addLine(to: CGPoint(x: tip.x + barLen * cos(angle + .pi / 2), y: tip.y + barLen * sin(angle + .pi / 2)))
