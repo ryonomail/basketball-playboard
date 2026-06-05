@@ -23,6 +23,7 @@ struct CourtEditorView: View {
     @State private var showSaveSheet = false
     @State private var showLoadSheet = false
     @State private var saveName: String = ""
+    @State private var showVisionCones: Bool = true
 
     var body: some View {
         GeometryReader { geo in
@@ -115,6 +116,8 @@ struct CourtEditorView: View {
             floatingBtn("trash", color: .red) { resetBoard() }
             addPlayerBtn(team: .home)
             addPlayerBtn(team: .away)
+            floatingBtn("eye\(showVisionCones ? "" : ".slash")",
+                        color: showVisionCones ? .blue : .secondary) { showVisionCones.toggle() }
         }
     }
 
@@ -205,15 +208,19 @@ struct CourtEditorView: View {
                     .frame(width: cs.width, height: cs.height)
                     .position(x: geo.size.width / 2, y: geo.size.height / 2)
 
-                // Vision cones (10m range, gradient fade)
-                VisionConeLayer(
-                    players: players,
-                    courtSize: cs,
-                    origin: origin,
-                    isPortrait: isPortrait,
-                    courtMode: courtMode
-                )
-                .allowsHitTesting(false)
+                // Vision cones (10m range, gradient fade, clipped to court)
+                if showVisionCones {
+                    VisionConeLayer(
+                        players: players,
+                        courtSize: cs,
+                        origin: origin,
+                        isPortrait: isPortrait,
+                        courtMode: courtMode
+                    )
+                    .clipShape(Rectangle().size(width: cs.width, height: cs.height)
+                        .offset(x: origin.x, y: origin.y))
+                    .allowsHitTesting(false)
+                }
 
                 LineDrawingView(lines: lines, isPortrait: isPortrait, isLandscapeHalf: !isPortrait && courtMode == .half)
                     .frame(width: cs.width, height: cs.height)
