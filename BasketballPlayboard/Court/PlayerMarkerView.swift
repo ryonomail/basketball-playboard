@@ -146,7 +146,7 @@ struct VisionConeLayer: View {
     }
 
     private func screenPos(for player: Player) -> CGPoint {
-        if isPortrait {
+        if isPortrait && courtMode == .full {
             return CGPoint(x: origin.x + player.position.x * courtSize.width,
                            y: origin.y + player.position.y * courtSize.height)
         } else if courtMode == .half {

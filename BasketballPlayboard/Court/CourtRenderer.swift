@@ -38,13 +38,14 @@ struct CourtRenderer: Shape {
     private var courtLen: CGFloat { mode.courtLength }
 
     // Map court coordinates (across: 0-15m, along: 0-courtLen) to screen point
-    // Portrait:        across→X, along→Y (basket at top)
-    // Landscape half:  across→X, along→Y inverted (basket at bottom / endline at bottom)
+    // Portrait half:   across→X, along→Y inverted (basket at bottom)
+    // Landscape half:  across→X, along→Y inverted (basket at bottom)
+    // Portrait full:   across→X, along→Y (baskets at top & bottom)
     // Landscape full:  along→X, across→Y (baskets at left & right)
     private func pt(_ across: CGFloat, _ along: CGFloat, _ w: CGFloat, _ h: CGFloat) -> CGPoint {
         let ax = across / 15.0
         let ay = along / courtLen
-        if isPortrait {
+        if isPortrait && mode == .full {
             return CGPoint(x: ax * w, y: ay * h)
         } else if mode == .half {
             return CGPoint(x: ax * w, y: (1 - ay) * h)

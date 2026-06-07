@@ -3,7 +3,7 @@ import SwiftUI
 struct LineDrawingView: View {
     let lines: [DrawingLine]
     var isPortrait: Bool = false
-    var isLandscapeHalf: Bool = false
+    var isHalf: Bool = false
 
     var body: some View {
         Canvas { context, size in
@@ -43,9 +43,9 @@ struct LineDrawingView: View {
     }
 
     private func mapPoint(_ p: CGPoint, size: CGSize) -> CGPoint {
-        if isPortrait {
+        if isPortrait && !isHalf {
             return CGPoint(x: p.x * size.width, y: p.y * size.height)
-        } else if isLandscapeHalf {
+        } else if isHalf {
             return CGPoint(x: p.x * size.width, y: (1 - p.y) * size.height)
         } else {
             return CGPoint(x: p.y * size.width, y: p.x * size.height)

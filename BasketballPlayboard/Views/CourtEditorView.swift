@@ -266,12 +266,12 @@ struct CourtEditorView: View {
                     .allowsHitTesting(false)
                 }
 
-                LineDrawingView(lines: lines, isPortrait: isPortrait, isLandscapeHalf: !isPortrait && courtMode == .half)
+                LineDrawingView(lines: lines, isPortrait: isPortrait, isHalf: courtMode == .half)
                     .frame(width: cs.width, height: cs.height)
                     .position(x: geo.size.width / 2, y: geo.size.height / 2)
 
                 if let drawing = currentDrawing {
-                    LineDrawingView(lines: [drawing], isPortrait: isPortrait, isLandscapeHalf: !isPortrait && courtMode == .half)
+                    LineDrawingView(lines: [drawing], isPortrait: isPortrait, isHalf: courtMode == .half)
                         .frame(width: cs.width, height: cs.height)
                         .position(x: geo.size.width / 2, y: geo.size.height / 2)
                 }
@@ -377,7 +377,7 @@ struct CourtEditorView: View {
     // MARK: - Coordinate Mapping
 
     private func courtToScreen(_ pos: CGPoint, cs: CGSize, origin: CGPoint, isPortrait: Bool) -> CGPoint {
-        if isPortrait {
+        if isPortrait && courtMode == .full {
             return CGPoint(x: origin.x + pos.x * cs.width, y: origin.y + pos.y * cs.height)
         } else if courtMode == .half {
             return CGPoint(x: origin.x + pos.x * cs.width, y: origin.y + (1 - pos.y) * cs.height)
@@ -388,7 +388,7 @@ struct CourtEditorView: View {
 
     private func screenToCourt(_ screen: CGPoint, cs: CGSize, origin: CGPoint, isPortrait: Bool) -> CGPoint {
         let raw: CGPoint
-        if isPortrait {
+        if isPortrait && courtMode == .full {
             raw = CGPoint(
                 x: (screen.x - origin.x) / cs.width,
                 y: (screen.y - origin.y) / cs.height
