@@ -12,7 +12,7 @@ struct PlayerMarkerView: View {
         ZStack {
             // Arms that rotate with facing
             ArmsShape()
-                .stroke(teamColor, style: StrokeStyle(lineWidth: 3.5, lineCap: .round))
+                .stroke(teamColor, style: StrokeStyle(lineWidth: 4, lineCap: .round))
                 .frame(width: 30, height: 30)
                 .rotationEffect(.radians(player.facing))
 
@@ -42,7 +42,7 @@ struct ArmsShape: Shape {
         let cx = rect.midX
         let cy = rect.midY
         let bodyR: CGFloat = rect.width * 0.37
-        let armLen: CGFloat = rect.width * 0.42
+        let armLen: CGFloat = rect.width * 0.55
         let spread: CGFloat = .pi / 3.2 // angle from forward direction
 
         // Left arm: from body edge, angled forward-left
@@ -94,7 +94,7 @@ struct InteractivePlayerView: View {
                                 value.startLocation.x - screenPosition.x,
                                 value.startLocation.y - screenPosition.y
                             )
-                            gestureMode = startDist > 18 ? .rotate : .move
+                            gestureMode = startDist > 12 ? .rotate : .move
                         }
 
                         switch gestureMode {
