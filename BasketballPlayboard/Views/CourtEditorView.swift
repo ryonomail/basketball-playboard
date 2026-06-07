@@ -364,7 +364,12 @@ struct CourtEditorView: View {
                 : nil
             )
             .onAppear {
-                snapInitialBall(cs: cs, origin: origin, isPortrait: isPortrait)
+                snapBallToPlayer1(cs: cs, origin: origin, isPortrait: isPortrait)
+            }
+            .onChange(of: courtMode) { _ in
+                DispatchQueue.main.async {
+                    snapBallToPlayer1(cs: cs, origin: origin, isPortrait: isPortrait)
+                }
             }
         }
     }
@@ -421,6 +426,8 @@ struct CourtEditorView: View {
             courtMode = newMode
             players = Formation.allPlayers(for: newMode)
             balls = [Ball()]
+            ballAttachments = [:]
+            needsSnap = true
             lines = []
         } label: {
             Text(courtMode == .half ? "ハーフ" : "フル")
@@ -517,6 +524,7 @@ struct CourtEditorView: View {
         players = Formation.allPlayers(for: courtMode)
         balls = [Ball()]
         ballAttachments = [:]
+        needsSnap = true
         lines = []
         selectedPlayerID = nil
     }
@@ -554,11 +562,11 @@ struct CourtEditorView: View {
         }
     }
 
-    @State private var didInitialSnap = false
+    @State private var needsSnap = true
 
-    private func snapInitialBall(cs: CGSize, origin: CGPoint, isPortrait: Bool) {
-        guard !didInitialSnap else { return }
-        didInitialSnap = true
+    private func snapBallToPlayer1(cs: CGSize, origin: CGPoint, isPortrait: Bool) {
+        guard needsSnap else { return }
+        needsSnap = false
         if let pg = players.first(where: { $0.team == .home && $0.number == "1" }),
            let bi = balls.indices.first {
             let hp = handPosition(for: pg, hand: .right, cs: cs, origin: origin, isPortrait: isPortrait)
