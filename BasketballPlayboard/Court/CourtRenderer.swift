@@ -41,12 +41,14 @@ struct CourtRenderer: Shape {
     // Portrait half:   across→X, along→Y inverted (basket at bottom)
     // Landscape half:  across→X, along→Y inverted (basket at bottom)
     // Portrait full:   across→X, along→Y (baskets at top & bottom)
-    // Landscape full:  along→X, across→Y (baskets at left & right)
+    // Portrait (half/full): across→X, along→Y inverted (near ring at bottom)
+    // Landscape half:      across→X, along→Y inverted (near ring at bottom)
+    // Landscape full:      along→X, across→Y (baskets at left & right)
     private func pt(_ across: CGFloat, _ along: CGFloat, _ w: CGFloat, _ h: CGFloat) -> CGPoint {
         let ax = across / 15.0
         let ay = along / courtLen
-        if isPortrait && mode == .full {
-            return CGPoint(x: ax * w, y: ay * h)
+        if isPortrait {
+            return CGPoint(x: ax * w, y: (1 - ay) * h)
         } else if mode == .half {
             return CGPoint(x: ax * w, y: (1 - ay) * h)
         } else {

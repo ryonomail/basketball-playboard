@@ -12,6 +12,7 @@ struct Formation {
         return atan2(dx, dy)
     }
 
+    // facingFull for landscape full court: screen_x=court_y, screen_y=court_x
     private static func facingFull(_ from: CGPoint, _ target: CGPoint) -> Double {
         let sdx = Double(target.y - from.y)
         let sdy = Double(target.x - from.x)

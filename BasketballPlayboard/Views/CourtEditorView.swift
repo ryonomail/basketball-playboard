@@ -364,10 +364,12 @@ struct CourtEditorView: View {
                 : nil
             )
             .onAppear {
+                updateFacingsIfNeeded(isPortrait: isPortrait)
                 snapBallToPlayer1(cs: cs, origin: origin, isPortrait: isPortrait)
             }
             .onChange(of: courtMode) { _ in
                 DispatchQueue.main.async {
+                    updateFacingsIfNeeded(isPortrait: isPortrait)
                     snapBallToPlayer1(cs: cs, origin: origin, isPortrait: isPortrait)
                 }
             }
@@ -377,8 +379,8 @@ struct CourtEditorView: View {
     // MARK: - Coordinate Mapping
 
     private func courtToScreen(_ pos: CGPoint, cs: CGSize, origin: CGPoint, isPortrait: Bool) -> CGPoint {
-        if isPortrait && courtMode == .full {
-            return CGPoint(x: origin.x + pos.x * cs.width, y: origin.y + pos.y * cs.height)
+        if isPortrait {
+            return CGPoint(x: origin.x + pos.x * cs.width, y: origin.y + (1 - pos.y) * cs.height)
         } else if courtMode == .half {
             return CGPoint(x: origin.x + pos.x * cs.width, y: origin.y + (1 - pos.y) * cs.height)
         } else {
@@ -388,10 +390,10 @@ struct CourtEditorView: View {
 
     private func screenToCourt(_ screen: CGPoint, cs: CGSize, origin: CGPoint, isPortrait: Bool) -> CGPoint {
         let raw: CGPoint
-        if isPortrait && courtMode == .full {
+        if isPortrait {
             raw = CGPoint(
                 x: (screen.x - origin.x) / cs.width,
-                y: (screen.y - origin.y) / cs.height
+                y: 1 - (screen.y - origin.y) / cs.height
             )
         } else if courtMode == .half {
             raw = CGPoint(
@@ -428,6 +430,7 @@ struct CourtEditorView: View {
             balls = [Ball()]
             ballAttachments = [:]
             needsSnap = true
+            needsFacingUpdate = true
             lines = []
         } label: {
             Text(courtMode == .half ? "ハーフ" : "フル")
@@ -525,6 +528,7 @@ struct CourtEditorView: View {
         balls = [Ball()]
         ballAttachments = [:]
         needsSnap = true
+        needsFacingUpdate = true
         lines = []
         selectedPlayerID = nil
     }
@@ -563,6 +567,36 @@ struct CourtEditorView: View {
     }
 
     @State private var needsSnap = true
+    @State private var needsFacingUpdate = true
+
+    private func updateFacingsIfNeeded(isPortrait: Bool) {
+        guard needsFacingUpdate else { return }
+        needsFacingUpdate = false
+        let ring = CGPoint(x: 0.5, y: 0)
+        let isLandscapeFull = !isPortrait && courtMode == .full
+        for i in players.indices {
+            let pos = players[i].position
+            let target: CGPoint
+            if players[i].team == .home {
+                target = ring
+            } else {
+                if let matchup = players.first(where: { $0.team == .home && $0.number == players[i].number }) {
+                    target = matchup.position
+                } else {
+                    target = ring
+                }
+            }
+            if isLandscapeFull {
+                let sdx = Double(target.y - pos.y)
+                let sdy = Double(target.x - pos.x)
+                players[i].facing = atan2(sdx, -sdy)
+            } else {
+                let dx = Double(target.x - pos.x)
+                let dy = Double(target.y - pos.y)
+                players[i].facing = atan2(dx, dy)
+            }
+        }
+    }
 
     private func snapBallToPlayer1(cs: CGSize, origin: CGPoint, isPortrait: Bool) {
         guard needsSnap else { return }

@@ -43,8 +43,8 @@ struct LineDrawingView: View {
     }
 
     private func mapPoint(_ p: CGPoint, size: CGSize) -> CGPoint {
-        if isPortrait && !isHalf {
-            return CGPoint(x: p.x * size.width, y: p.y * size.height)
+        if isPortrait {
+            return CGPoint(x: p.x * size.width, y: (1 - p.y) * size.height)
         } else if isHalf {
             return CGPoint(x: p.x * size.width, y: (1 - p.y) * size.height)
         } else {
