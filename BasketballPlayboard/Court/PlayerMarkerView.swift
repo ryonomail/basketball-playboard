@@ -82,7 +82,7 @@ struct InteractivePlayerView: View {
         case undecided, move, rotate
     }
 
-    private var hitSize: CGFloat { 90 * scale }
+    private var hitSize: CGFloat { 44 * scale }
     private var moveThreshold: CGFloat { 16 * scale }
 
     var body: some View {
