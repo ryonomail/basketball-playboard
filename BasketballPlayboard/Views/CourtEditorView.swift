@@ -124,7 +124,7 @@ struct CourtEditorView: View {
                 Image(systemName: showHomeVision ? "eye" : "eye.slash")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(.white)
-                    .frame(width: 34, height: 34)
+                    .frame(width: 40, height: 40)
                     .background(showHomeVision ? Color.blue : Color.blue.opacity(0.3))
                     .cornerRadius(8)
             }
@@ -134,7 +134,7 @@ struct CourtEditorView: View {
                 Image(systemName: showAwayVision ? "eye" : "eye.slash")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(.white)
-                    .frame(width: 34, height: 34)
+                    .frame(width: 40, height: 40)
                     .background(showAwayVision ? Color.red : Color.red.opacity(0.3))
                     .cornerRadius(8)
             }
@@ -152,7 +152,7 @@ struct CourtEditorView: View {
                 Image(systemName: "plus")
                     .font(.system(size: 12, weight: .bold))
                     .foregroundColor(.white)
-                    .frame(width: 34, height: 34)
+                    .frame(width: 40, height: 40)
                     .background(team == .home ? Color.blue : Color.red)
                     .cornerRadius(8)
             }
@@ -176,7 +176,7 @@ struct CourtEditorView: View {
                 ForEach(LineType.allCases, id: \.self) { type in
                     Button { selectedLineType = type } label: {
                         LinePreview(type: type)
-                            .frame(width: 32, height: 32)
+                            .frame(width: 38, height: 38)
                             .background(selectedLineType == type ? Color.blue.opacity(0.2) : Color.clear)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 6)
@@ -371,9 +371,9 @@ struct CourtEditorView: View {
     private func floatingBtn(_ icon: String, color: Color = .primary, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .medium))
+                .font(.system(size: 18, weight: .medium))
                 .foregroundColor(color)
-                .frame(width: 34, height: 34)
+                .frame(width: 40, height: 40)
                 .background(.ultraThinMaterial)
                 .cornerRadius(8)
         }
@@ -390,7 +390,7 @@ struct CourtEditorView: View {
             Text(courtMode == .half ? "ハーフ" : "フル")
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundColor(.primary)
-                .frame(width: 44, height: 34)
+                .frame(width: 50, height: 40)
                 .background(.ultraThinMaterial)
                 .cornerRadius(8)
         }
@@ -399,9 +399,9 @@ struct CourtEditorView: View {
     private func modeBtn(_ icon: String, mode: EditorMode) -> some View {
         Button { editorMode = mode } label: {
             Image(systemName: icon)
-                .font(.system(size: 14, weight: .medium))
+                .font(.system(size: 16, weight: .medium))
                 .foregroundColor(editorMode == mode ? .white : .secondary)
-                .frame(width: 32, height: 32)
+                .frame(width: 38, height: 38)
                 .background(editorMode == mode ? Color.blue : Color(.systemGray5))
                 .cornerRadius(7)
         }

@@ -12,26 +12,26 @@ struct PlayerMarkerView: View {
         ZStack {
             // Arms that rotate with facing
             ArmsShape()
-                .stroke(teamColor, style: StrokeStyle(lineWidth: 4, lineCap: .round))
-                .frame(width: 30, height: 30)
+                .stroke(teamColor, style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                .frame(width: 40, height: 40)
                 .rotationEffect(.radians(player.facing))
 
             // Body circle
             Circle()
                 .fill(teamColor)
-                .frame(width: 22, height: 22)
+                .frame(width: 30, height: 30)
                 .overlay(
-                    Circle().stroke(isSelected ? Color.yellow : Color.white, lineWidth: isSelected ? 2.5 : 1.2)
+                    Circle().stroke(isSelected ? Color.yellow : Color.white, lineWidth: isSelected ? 3 : 1.5)
                 )
                 .overlay(
                     Text(player.number)
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                 )
         }
         .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-        .frame(width: 80, height: 80)
-        .contentShape(Circle().size(width: 80, height: 80))
+        .frame(width: 90, height: 90)
+        .contentShape(Circle().size(width: 90, height: 90))
     }
 }
 
@@ -83,7 +83,7 @@ struct InteractivePlayerView: View {
     var body: some View {
         PlayerMarkerView(player: player, isSelected: isSelected)
             .position(screenPosition)
-            .contentShape(Circle().size(width: 80, height: 80)
+            .contentShape(Circle().size(width: 90, height: 90)
                 .offset(x: screenPosition.x - 40, y: screenPosition.y - 40))
             .gesture(
                 interactive ?
@@ -94,7 +94,7 @@ struct InteractivePlayerView: View {
                                 value.startLocation.x - screenPosition.x,
                                 value.startLocation.y - screenPosition.y
                             )
-                            gestureMode = startDist > 12 ? .rotate : .move
+                            gestureMode = startDist > 16 ? .rotate : .move
                         }
 
                         switch gestureMode {
@@ -208,16 +208,16 @@ struct BallView: View {
                         colors: [Color(red: 1.0, green: 0.55, blue: 0.1), Color(red: 0.8, green: 0.35, blue: 0.0)],
                         center: .init(x: 0.35, y: 0.35),
                         startRadius: 0,
-                        endRadius: 14
+                        endRadius: 18
                     )
                 )
-                .frame(width: 22, height: 22)
+                .frame(width: 28, height: 28)
 
             Canvas { context, size in
                 let cx = size.width / 2
                 let cy = size.height / 2
                 let r = size.width / 2 - 1
-                let style = StrokeStyle(lineWidth: 0.8, lineCap: .round)
+                let style = StrokeStyle(lineWidth: 1.0, lineCap: .round)
                 let color: Color = .black.opacity(0.45)
 
                 var vLine = Path()
@@ -246,12 +246,12 @@ struct BallView: View {
                 )
                 context.stroke(rightCurve, with: .color(color), style: style)
             }
-            .frame(width: 22, height: 22)
+            .frame(width: 28, height: 28)
 
             if isSelected {
                 Circle()
-                    .stroke(Color.yellow, lineWidth: 2.5)
-                    .frame(width: 26, height: 26)
+                    .stroke(Color.yellow, lineWidth: 3)
+                    .frame(width: 34, height: 34)
             }
         }
         .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
