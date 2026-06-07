@@ -165,6 +165,46 @@ class VideoExporter {
                 CGPoint(x: ox + pos.x * courtW, y: oy + (1 - pos.y) * courtH)
             }
 
+            // Vision cones
+            let visiblePlayers = snapshot.players.filter {
+                ($0.team == .home && showHomeVision) || ($0.team == .away && showAwayVision)
+            }
+            if !visiblePlayers.isEmpty {
+                ctx.cgContext.saveGState()
+                ctx.cgContext.clip(to: CGRect(x: ox, y: oy, width: courtW, height: courtH))
+                let metersPerPixel = courtW / 15.0
+                let visionR = 10.0 * metersPerPixel
+                let coneSpread: CGFloat = .pi / 3
+                let rings = 20
+                let segments = 30
+                for player in visiblePlayers {
+                    let center = courtToScreen(player.position)
+                    let baseColor: UIColor = player.team == .home ? .systemBlue : .systemRed
+                    for r in (0..<rings).reversed() {
+                        let outerR = visionR * CGFloat(r + 1) / CGFloat(rings)
+                        let innerR = visionR * CGFloat(r) / CGFloat(rings)
+                        let alpha = 0.18 * (1.0 - CGFloat(r) / CGFloat(rings))
+                        let path = UIBezierPath()
+                        for i in 0...segments {
+                            let t = CGFloat(i) / CGFloat(segments)
+                            let angle = player.facing - coneSpread / 2 + t * coneSpread - .pi / 2
+                            let pt = CGPoint(x: center.x + outerR * cos(angle), y: center.y + outerR * sin(angle))
+                            if i == 0 { path.move(to: pt) } else { path.addLine(to: pt) }
+                        }
+                        for i in (0...segments).reversed() {
+                            let t = CGFloat(i) / CGFloat(segments)
+                            let angle = player.facing - coneSpread / 2 + t * coneSpread - .pi / 2
+                            let pt = CGPoint(x: center.x + innerR * cos(angle), y: center.y + innerR * sin(angle))
+                            path.addLine(to: pt)
+                        }
+                        path.close()
+                        baseColor.withAlphaComponent(alpha).setFill()
+                        path.fill()
+                    }
+                }
+                ctx.cgContext.restoreGState()
+            }
+
             // Draw lines
             for line in snapshot.lines {
                 guard line.points.count >= 2 else { continue }
