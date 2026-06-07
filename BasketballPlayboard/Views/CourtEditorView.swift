@@ -626,6 +626,7 @@ struct CourtEditorView: View {
                 .background(.ultraThinMaterial)
                 .cornerRadius(size * 0.2)
         }
+        .disabled(isRecording || playbackPlay != nil)
     }
 
     private func modeBtn(_ icon: String, mode: EditorMode, size: CGFloat) -> some View {
