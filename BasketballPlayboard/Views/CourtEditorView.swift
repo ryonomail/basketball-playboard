@@ -19,7 +19,8 @@ struct CourtEditorView: View {
     @State private var currentDrawing: DrawingLine? = nil
     @State private var selectedPlayerID: UUID? = nil
     @State private var draggingBallID: UUID? = nil
-    @State private var ballAttachments: [UUID: UUID] = [:] // ballID -> playerID
+    enum HandSide { case left, right }
+    @State private var ballAttachments: [UUID: (playerID: UUID, hand: HandSide)] = [:]
     @State private var editingPlayerID: UUID? = nil
     @State private var editingNumber: String = ""
     @State private var showSaveSheet = false
@@ -289,7 +290,7 @@ struct CourtEditorView: View {
                                     }
                                 }
                                 .onEnded { _ in
-                                    snapBallToNearestPlayer(ballID: ball.id)
+                                    snapBallToNearestPlayer(ballID: ball.id, cs: cs, origin: origin, isPortrait: isPortrait)
                                     draggingBallID = nil
                                 }
                         )
@@ -314,21 +315,14 @@ struct CourtEditorView: View {
                             selectedPlayerID = player.id
                             let newPos = screenToCourt(location, cs: cs, origin: origin, isPortrait: isPortrait)
                             if let idx = players.firstIndex(where: { $0.id == player.id }) {
-                                let oldPos = players[idx].position
-                                let dx = newPos.x - oldPos.x
-                                let dy = newPos.y - oldPos.y
                                 players[idx].position = newPos
-                                for (ballID, playerID) in ballAttachments where playerID == player.id {
-                                    if let bi = balls.firstIndex(where: { $0.id == ballID }) {
-                                        balls[bi].position.x += dx
-                                        balls[bi].position.y += dy
-                                    }
-                                }
+                                updateAttachedBalls(playerID: player.id, cs: cs, origin: origin, isPortrait: isPortrait)
                             }
                         },
                         onRotate: { angle in
                             if let idx = players.firstIndex(where: { $0.id == player.id }) {
                                 players[idx].facing = angle
+                                updateAttachedBalls(playerID: player.id, cs: cs, origin: origin, isPortrait: isPortrait)
                             }
                         },
                         onMoveEnd: {}
@@ -524,21 +518,44 @@ struct CourtEditorView: View {
         selectedPlayerID = nil
     }
 
-    private func snapBallToNearestPlayer(ballID: UUID) {
+    private func handPosition(for player: Player, hand: HandSide, cs: CGSize, origin: CGPoint, isPortrait: Bool) -> CGPoint {
+        let spread: CGFloat = .pi / 3.2
+        let armReach: CGFloat = 0.92 // (bodyR 0.37 + armLen 0.55) normalized
+        let armsFrame: CGFloat = 40.0
+        let pixelDist = armReach * armsFrame
+        let handAngle = hand == .left ? player.facing - spread : player.facing + spread
+        let screenCenter = courtToScreen(player.position, cs: cs, origin: origin, isPortrait: isPortrait)
+        let sx = screenCenter.x + pixelDist * sin(handAngle)
+        let sy = screenCenter.y - pixelDist * cos(handAngle)
+        return screenToCourt(CGPoint(x: sx, y: sy), cs: cs, origin: origin, isPortrait: isPortrait)
+    }
+
+    private func snapBallToNearestPlayer(ballID: UUID, cs: CGSize, origin: CGPoint, isPortrait: Bool) {
         guard let bi = balls.firstIndex(where: { $0.id == ballID }) else { return }
         let ballPos = balls[bi].position
-        let snapDist: CGFloat = 0.04
-        var closest: (UUID, CGFloat)?
+        let snapDist: CGFloat = 0.06
+        var closest: (UUID, HandSide, CGFloat)?
         for player in players {
-            let d = hypot(player.position.x - ballPos.x, player.position.y - ballPos.y)
-            if d < snapDist {
-                if closest == nil || d < closest!.1 { closest = (player.id, d) }
+            for hand in [HandSide.left, .right] {
+                let hp = handPosition(for: player, hand: hand, cs: cs, origin: origin, isPortrait: isPortrait)
+                let d = hypot(hp.x - ballPos.x, hp.y - ballPos.y)
+                if d < snapDist && (closest == nil || d < closest!.2) {
+                    closest = (player.id, hand, d)
+                }
             }
         }
-        if let (playerID, _) = closest {
-            if let pi = players.firstIndex(where: { $0.id == playerID }) {
-                balls[bi].position = players[pi].position
-                ballAttachments[ballID] = playerID
+        if let (playerID, hand, _) = closest {
+            ballAttachments[ballID] = (playerID: playerID, hand: hand)
+            let hp = handPosition(for: players.first(where: { $0.id == playerID })!, hand: hand, cs: cs, origin: origin, isPortrait: isPortrait)
+            balls[bi].position = hp
+        }
+    }
+
+    private func updateAttachedBalls(playerID: UUID, cs: CGSize, origin: CGPoint, isPortrait: Bool) {
+        for (ballID, attachment) in ballAttachments where attachment.playerID == playerID {
+            if let bi = balls.firstIndex(where: { $0.id == ballID }),
+               let player = players.first(where: { $0.id == playerID }) {
+                balls[bi].position = handPosition(for: player, hand: attachment.hand, cs: cs, origin: origin, isPortrait: isPortrait)
             }
         }
     }
