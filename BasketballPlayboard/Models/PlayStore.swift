@@ -3,7 +3,7 @@ import Foundation
 class PlayStore: ObservableObject {
     @Published var plays: [Play] = []
 
-    private let storageKey = "saved_plays"
+    private let storageKey = "saved_plays_v2"
 
     init() {
         load()

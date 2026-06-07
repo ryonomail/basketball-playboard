@@ -29,6 +29,18 @@ struct CourtEditorView: View {
     @State private var showHomeVision: Bool = true
     @State private var showAwayVision: Bool = true
 
+    // Recording
+    @State private var isRecording = false
+    @State private var recordingSnapshots: [PlaySnapshot] = []
+    @State private var recordingStart: Date? = nil
+    @State private var recordingTimer: Timer? = nil
+
+    // Playback
+    @State private var isPlaying = false
+    @State private var playbackPlay: Play? = nil
+    @State private var playbackTime: TimeInterval = 0
+    @State private var playbackTimer: Timer? = nil
+
     var body: some View {
         GeometryReader { geo in
             let isPortrait = geo.size.height > geo.size.width
@@ -83,11 +95,18 @@ struct CourtEditorView: View {
             // Court
             courtView(isPortrait: false)
 
-            // Right toolbar: draw tools
-            drawToolbar(horizontal: false, btnSize: btnSize)
-                .frame(width: toolW)
-                .padding(.vertical, 6)
-                .padding(.trailing, 4)
+            // Right toolbar: playback controls or draw tools
+            if playbackPlay != nil {
+                playbackBar(btnSize: btnSize, horizontal: false)
+                    .frame(width: toolW + 40)
+                    .padding(.vertical, 6)
+                    .padding(.trailing, 4)
+            } else {
+                drawToolbar(horizontal: false, btnSize: btnSize)
+                    .frame(width: toolW)
+                    .padding(.vertical, 6)
+                    .padding(.trailing, 4)
+            }
         }
     }
 
@@ -111,12 +130,16 @@ struct CourtEditorView: View {
             // Court
             courtView(isPortrait: true)
 
-            // Bottom bar: draw tools
-            ScrollView(.horizontal, showsIndicators: false) {
-                drawToolbar(horizontal: true, btnSize: btnSize)
-                    .padding(.horizontal, 6)
+            // Bottom bar: playback controls or draw tools
+            if playbackPlay != nil {
+                playbackBar(btnSize: btnSize)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    drawToolbar(horizontal: true, btnSize: btnSize)
+                        .padding(.horizontal, 6)
+                }
+                .frame(height: btnSize + 8)
             }
-            .frame(height: btnSize + 8)
         }
     }
 
@@ -124,7 +147,28 @@ struct CourtEditorView: View {
 
     @ViewBuilder
     private func actionButtons(size: CGFloat) -> some View {
-        floatingBtn("square.and.arrow.down", size: size) { showSaveSheet = true }
+        // REC / STOP
+        if isRecording {
+            Button { stopRecording() } label: {
+                Image(systemName: "stop.fill")
+                    .font(.system(size: size * 0.4, weight: .bold))
+                    .foregroundColor(.white)
+                    .frame(width: size, height: size)
+                    .background(Color.red)
+                    .cornerRadius(size * 0.2)
+            }
+        } else {
+            Button { startRecording() } label: {
+                Circle()
+                    .fill(Color.red)
+                    .frame(width: size * 0.4, height: size * 0.4)
+                    .frame(width: size, height: size)
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(size * 0.2)
+            }
+            .disabled(playbackPlay != nil)
+        }
+
         floatingBtn("folder", size: size) { showLoadSheet = true }
         floatingBtn("arrow.uturn.backward", size: size) { if !lines.isEmpty { lines.removeLast() } }
         floatingBtn("trash", color: .red, size: size) { resetBoard() }
@@ -413,6 +457,81 @@ struct CourtEditorView: View {
         return CGPoint(x: max(0, min(1, raw.x)), y: max(0, min(1, raw.y)))
     }
 
+    // MARK: - Playback Bar
+
+    @ViewBuilder
+    private func playbackBar(btnSize: CGFloat, horizontal: Bool = true) -> some View {
+        let duration = playbackPlay?.duration ?? 1
+        if horizontal {
+            HStack(spacing: 8) {
+                Button { togglePlayback() } label: {
+                    Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                        .font(.system(size: btnSize * 0.4))
+                        .foregroundColor(.primary)
+                        .frame(width: btnSize, height: btnSize)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(btnSize * 0.2)
+                }
+                Slider(value: $playbackTime, in: 0...max(duration, 0.01)) { editing in
+                    if editing { stopPlayback() }
+                    applySnapshot(at: playbackTime)
+                }
+                Text(String(format: "%.1fs", playbackTime))
+                    .font(.system(size: 11, design: .monospaced))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 40)
+                Button {
+                    stopPlayback()
+                    playbackPlay = nil
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: btnSize * 0.35))
+                        .foregroundColor(.primary)
+                        .frame(width: btnSize, height: btnSize)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(btnSize * 0.2)
+                }
+            }
+            .padding(.horizontal, 8)
+            .frame(height: btnSize + 8)
+        } else {
+            VStack(spacing: 6) {
+                Button { togglePlayback() } label: {
+                    Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                        .font(.system(size: btnSize * 0.4))
+                        .foregroundColor(.primary)
+                        .frame(width: btnSize, height: btnSize)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(btnSize * 0.2)
+                }
+                Text(String(format: "%.1fs", playbackTime))
+                    .font(.system(size: 10, design: .monospaced))
+                    .foregroundStyle(.secondary)
+                Button {
+                    stopPlayback()
+                    playbackPlay = nil
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: btnSize * 0.35))
+                        .foregroundColor(.primary)
+                        .frame(width: btnSize, height: btnSize)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(btnSize * 0.2)
+                }
+            }
+        }
+    }
+
+    private func togglePlayback() {
+        guard let play = playbackPlay else { return }
+        if isPlaying {
+            stopPlayback()
+        } else {
+            if playbackTime >= play.duration { playbackTime = 0 }
+            startPlayback(play)
+        }
+    }
+
     // MARK: - UI Components
 
     private func floatingBtn(_ icon: String, color: Color = .primary, size: CGFloat, action: @escaping () -> Void) -> some View {
@@ -464,12 +583,20 @@ struct CourtEditorView: View {
             Form { TextField("Play Name", text: $saveName) }
             .navigationTitle("Save").navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { showSaveSheet = false } }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        recordingSnapshots = []
+                        showSaveSheet = false
+                    }
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        let frame = PlayFrame(players: players, balls: balls, lines: lines)
-                        let play = Play(name: saveName.isEmpty ? "Play \(playStore.plays.count + 1)" : saveName, frames: [frame])
+                        let play = Play(
+                            name: saveName.isEmpty ? "Play \(playStore.plays.count + 1)" : saveName,
+                            snapshots: recordingSnapshots
+                        )
                         playStore.save(play)
+                        recordingSnapshots = []
                         saveName = ""
                         showSaveSheet = false
                     }
@@ -487,13 +614,19 @@ struct CourtEditorView: View {
                 } else {
                     ForEach(playStore.plays) { play in
                         Button {
-                            if let frame = play.frames.first {
-                                players = frame.players
-                                balls = frame.balls
-                                lines = frame.lines
-                            }
                             showLoadSheet = false
-                        } label: { Text(play.name) }
+                            playbackTime = 0
+                            playbackPlay = play
+                            applySnapshot(at: 0)
+                        } label: {
+                            HStack {
+                                Text(play.name)
+                                Spacer()
+                                Text(String(format: "%.1fs", play.duration))
+                                    .foregroundStyle(.secondary)
+                                    .font(.caption)
+                            }
+                        }
                     }
                     .onDelete { indexSet in
                         for i in indexSet { playStore.delete(playStore.plays[i]) }
@@ -653,6 +786,65 @@ struct CourtEditorView: View {
         }
         result.append(points.last!)
         return result
+    }
+
+    // MARK: - Recording
+
+    private func startRecording() {
+        recordingSnapshots = []
+        recordingStart = Date()
+        isRecording = true
+        captureSnapshot()
+        recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            captureSnapshot()
+        }
+    }
+
+    private func captureSnapshot() {
+        guard let start = recordingStart else { return }
+        let t = Date().timeIntervalSince(start)
+        recordingSnapshots.append(PlaySnapshot(players: players, balls: balls, lines: lines, timestamp: t))
+    }
+
+    private func stopRecording() {
+        recordingTimer?.invalidate()
+        recordingTimer = nil
+        captureSnapshot()
+        isRecording = false
+        saveName = ""
+        showSaveSheet = true
+    }
+
+    // MARK: - Playback
+
+    private func startPlayback(_ play: Play) {
+        playbackPlay = play
+        playbackTime = 0
+        applySnapshot(at: 0)
+        isPlaying = true
+        playbackTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 30.0, repeats: true) { _ in
+            guard let p = playbackPlay else { return }
+            playbackTime += 1.0 / 30.0
+            if playbackTime >= p.duration {
+                playbackTime = p.duration
+                stopPlayback()
+            }
+            applySnapshot(at: playbackTime)
+        }
+    }
+
+    private func stopPlayback() {
+        playbackTimer?.invalidate()
+        playbackTimer = nil
+        isPlaying = false
+    }
+
+    private func applySnapshot(at time: TimeInterval) {
+        guard let play = playbackPlay,
+              let snap = play.interpolated(at: time) else { return }
+        players = snap.players
+        balls = snap.balls
+        lines = snap.lines
     }
 }
 
