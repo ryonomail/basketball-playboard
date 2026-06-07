@@ -63,15 +63,17 @@ struct CourtEditorView: View {
     // MARK: - Landscape
 
     private func landscapeLayout(geo: GeometryProxy) -> some View {
-        HStack(spacing: 0) {
+        let compact = geo.size.height < 500
+        let toolW: CGFloat = compact ? 46 : 52
+        return HStack(spacing: 0) {
             // Left toolbar: actions + court mode
-            VStack(spacing: 10) {
+            VStack(spacing: compact ? 6 : 10) {
                 actionButtons
                 Spacer()
                 courtModeToggle
             }
-            .frame(width: 52)
-            .padding(.vertical, 8)
+            .frame(width: toolW)
+            .padding(.vertical, 6)
             .padding(.leading, 4)
 
             // Court
@@ -79,8 +81,8 @@ struct CourtEditorView: View {
 
             // Right toolbar: draw tools
             drawToolbar(horizontal: false)
-                .frame(width: 52)
-                .padding(.vertical, 8)
+                .frame(width: toolW)
+                .padding(.vertical, 6)
                 .padding(.trailing, 4)
         }
     }

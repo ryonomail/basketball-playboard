@@ -27,15 +27,15 @@ struct Formation {
             ("1", CGPoint(x: 0.50, y: 0.70)),  // Top (above 3P arc)
             ("2", CGPoint(x: 0.82, y: 0.52)),  // Right 45
             ("3", CGPoint(x: 0.18, y: 0.52)),  // Left 45
-            ("4", CGPoint(x: 0.94, y: 0.08)),  // Right corner
-            ("5", CGPoint(x: 0.06, y: 0.08)),  // Left corner
+            ("4", CGPoint(x: 0.90, y: 0.10)),  // Right corner
+            ("5", CGPoint(x: 0.10, y: 0.10)),  // Left corner
         ]
         let defense: [(String, CGPoint)] = [
             ("1", CGPoint(x: 0.50, y: 0.60)),
             ("2", CGPoint(x: 0.75, y: 0.45)),
             ("3", CGPoint(x: 0.25, y: 0.45)),
-            ("4", CGPoint(x: 0.88, y: 0.08)),
-            ("5", CGPoint(x: 0.12, y: 0.08)),
+            ("4", CGPoint(x: 0.84, y: 0.10)),
+            ("5", CGPoint(x: 0.16, y: 0.10)),
         ]
         var players: [Player] = []
         for (i, (num, pos)) in offense.enumerated() {
@@ -56,15 +56,15 @@ struct Formation {
             ("1", CGPoint(x: 0.50, y: 0.35)),  // Top
             ("2", CGPoint(x: 0.82, y: 0.26)),  // Right 45
             ("3", CGPoint(x: 0.18, y: 0.26)),  // Left 45
-            ("4", CGPoint(x: 0.94, y: 0.04)),  // Right corner
-            ("5", CGPoint(x: 0.06, y: 0.04)),  // Left corner
+            ("4", CGPoint(x: 0.90, y: 0.05)),  // Right corner
+            ("5", CGPoint(x: 0.10, y: 0.05)),  // Left corner
         ]
         let defense: [(String, CGPoint)] = [
             ("1", CGPoint(x: 0.50, y: 0.30)),
             ("2", CGPoint(x: 0.75, y: 0.225)),
             ("3", CGPoint(x: 0.25, y: 0.225)),
-            ("4", CGPoint(x: 0.88, y: 0.04)),
-            ("5", CGPoint(x: 0.12, y: 0.04)),
+            ("4", CGPoint(x: 0.84, y: 0.05)),
+            ("5", CGPoint(x: 0.12, y: 0.05)),
         ]
         var players: [Player] = []
         for (i, (num, pos)) in offense.enumerated() {
