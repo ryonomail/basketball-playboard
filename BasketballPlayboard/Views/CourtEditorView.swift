@@ -363,6 +363,9 @@ struct CourtEditorView: View {
                     }
                 : nil
             )
+            .onAppear {
+                snapInitialBall(cs: cs, origin: origin, isPortrait: isPortrait)
+            }
         }
     }
 
@@ -548,6 +551,19 @@ struct CourtEditorView: View {
             ballAttachments[ballID] = (playerID: playerID, hand: hand)
             let hp = handPosition(for: players.first(where: { $0.id == playerID })!, hand: hand, cs: cs, origin: origin, isPortrait: isPortrait)
             balls[bi].position = hp
+        }
+    }
+
+    @State private var didInitialSnap = false
+
+    private func snapInitialBall(cs: CGSize, origin: CGPoint, isPortrait: Bool) {
+        guard !didInitialSnap else { return }
+        didInitialSnap = true
+        if let pg = players.first(where: { $0.team == .home && $0.number == "1" }),
+           let bi = balls.indices.first {
+            let hp = handPosition(for: pg, hand: .right, cs: cs, origin: origin, isPortrait: isPortrait)
+            balls[bi].position = hp
+            ballAttachments[balls[bi].id] = (playerID: pg.id, hand: .right)
         }
     }
 
