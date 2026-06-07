@@ -1,45 +1,79 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <!-- Background: dark -->
+  <!--
+    FIBA court: 28m (along) x 15m (across)
+    Icon layout: landscape full court
+    Court area: 800px wide x 429px tall (28:15 ratio)
+    Centered in 1024x1024
+    Scale: ~28.57 px/m
+    px_x(along_m) = 112 + (along_m / 28) * 800
+    px_y(across_m) = 298 + (across_m / 15) * 429
+  -->
+
+  <!-- Background -->
   <rect width="1024" height="1024" rx="224" fill="#1a1a1a"/>
 
-  <!-- Court surface: white -->
-  <rect x="112" y="180" width="800" height="664" rx="8" fill="#ffffff" opacity="0.95"/>
+  <!-- Court surface -->
+  <rect x="112" y="298" width="800" height="429" rx="4" fill="#f5f5f5"/>
 
-  <!-- Court lines: black -->
-  <g stroke="#1a1a1a" stroke-width="6" fill="none">
+  <g stroke="#1a1a1a" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <!-- Outline -->
-    <rect x="112" y="180" width="800" height="664" rx="8"/>
-    <!-- Center line -->
-    <line x1="512" y1="180" x2="512" y2="844"/>
-    <!-- Center circle -->
-    <circle cx="512" cy="512" r="80"/>
+    <rect x="112" y="298" width="800" height="429" rx="4"/>
 
-    <!-- Left half court -->
-    <!-- Paint area -->
-    <rect x="112" y="380" width="180" height="264"/>
-    <!-- Free throw circle -->
-    <circle cx="292" cy="512" r="80"/>
-    <!-- Basket -->
-    <circle cx="152" cy="512" r="12"/>
-    <!-- Backboard -->
-    <line x1="136" y1="480" x2="136" y2="544"/>
-    <!-- 3-point arc -->
-    <path d="M 112 300 C 380 300 380 724 112 724"/>
-    <!-- Restricted area arc -->
-    <path d="M 130 480 C 192 460 192 564 130 544"/>
+    <!-- Center line: along=14m → x=512 -->
+    <line x1="512" y1="298" x2="512" y2="727"/>
 
-    <!-- Right half court -->
-    <!-- Paint area -->
-    <rect x="732" y="380" width="180" height="264"/>
-    <!-- Free throw circle -->
-    <circle cx="732" cy="512" r="80"/>
-    <!-- Basket -->
-    <circle cx="872" cy="512" r="12"/>
-    <!-- Backboard -->
-    <line x1="888" y1="480" x2="888" y2="544"/>
-    <!-- 3-point arc -->
-    <path d="M 912 300 C 644 300 644 724 912 724"/>
-    <!-- Restricted area arc -->
-    <path d="M 894 480 C 832 460 832 564 894 544"/>
+    <!-- Center circle: r=1.8m → 51px, at (512, 512) -->
+    <circle cx="512" cy="512" r="51"/>
+
+    <!-- === NEAR SIDE (baseline at along=0, x=112) === -->
+
+    <!-- Paint: 4.9m wide (across 5.05-9.95), 5.8m deep (along 0-5.8) -->
+    <!-- x: 112 to 278, y: 442 to 583 -->
+    <line x1="112" y1="442" x2="278" y2="442"/>
+    <line x1="278" y1="442" x2="278" y2="583"/>
+    <line x1="278" y1="583" x2="112" y2="583"/>
+
+    <!-- Free throw circle: r=1.8m at (7.5, 5.8) → (278, 512) r=51 -->
+    <circle cx="278" cy="512" r="51"/>
+
+    <!-- Basket: at (7.5, 1.575) → (157, 512) -->
+    <circle cx="157" cy="512" r="10" stroke-width="4"/>
+
+    <!-- Backboard: at along=1.2m, across 6.6-8.4 → x=146, y=487-538 -->
+    <line x1="146" y1="487" x2="146" y2="538" stroke-width="5"/>
+
+    <!-- Restricted area: r=1.25m from basket → 36px arc -->
+    <path d="M 157 476 A 36 36 0 0 1 157 548"/>
+
+    <!-- 3-point line: r=6.75m=193px from basket(157,512) -->
+    <!-- Straight at across=0.9m → y=324, across=14.1m → y=701 -->
+    <!-- Arc meets straight at along≈3.0m → x=198 -->
+    <line x1="112" y1="324" x2="198" y2="324"/>
+    <line x1="112" y1="701" x2="198" y2="701"/>
+    <path d="M 198 324 A 193 193 0 0 1 198 701"/>
+
+    <!-- === FAR SIDE (baseline at along=28, x=912) === -->
+
+    <!-- Paint: along 22.2-28 → x=746 to 912 -->
+    <line x1="912" y1="442" x2="746" y2="442"/>
+    <line x1="746" y1="442" x2="746" y2="583"/>
+    <line x1="746" y1="583" x2="912" y2="583"/>
+
+    <!-- Free throw circle at (7.5, 22.2) → (746, 512) r=51 -->
+    <circle cx="746" cy="512" r="51"/>
+
+    <!-- Basket at (7.5, 26.425) → (867, 512) -->
+    <circle cx="867" cy="512" r="10" stroke-width="4"/>
+
+    <!-- Backboard at along=26.8 → x=878 -->
+    <line x1="878" y1="487" x2="878" y2="538" stroke-width="5"/>
+
+    <!-- Restricted area -->
+    <path d="M 867 476 A 36 36 0 0 0 867 548"/>
+
+    <!-- 3-point line -->
+    <line x1="912" y1="324" x2="826" y2="324"/>
+    <line x1="912" y1="701" x2="826" y2="701"/>
+    <path d="M 826 324 A 193 193 0 0 0 826 701"/>
   </g>
 </svg>
