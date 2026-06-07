@@ -87,10 +87,10 @@ struct CourtRenderer: Shape {
         let bx: CGFloat = 7.5 // basket across center
         let basketAlong = al(1.575)
 
-        // --- Paint (4.9m wide × 5.8m from baseline) ---
-        let paintTL = pt(bx - 2.45, al(0), w, h)
-        let paintBR = pt(bx + 2.45, al(5.8), w, h)
-        path.addRect(normalizedRect(paintTL, paintBR))
+        // --- Paint (4.9m wide × 5.8m from baseline, skip baseline edge to avoid double stroke) ---
+        addLine(&path, from: pt(bx - 2.45, al(0), w, h), to: pt(bx - 2.45, al(5.8), w, h))
+        addLine(&path, from: pt(bx - 2.45, al(5.8), w, h), to: pt(bx + 2.45, al(5.8), w, h))
+        addLine(&path, from: pt(bx + 2.45, al(5.8), w, h), to: pt(bx + 2.45, al(0), w, h))
 
         // --- Free throw circle (1.8m radius at free throw line) ---
         addCircle(&path, center: (bx, al(5.8)), radius: 1.8, w: w, h: h)
