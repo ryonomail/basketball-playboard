@@ -90,7 +90,6 @@ struct InteractivePlayerView: View {
             .position(screenPosition)
             .contentShape(Circle().size(width: hitSize, height: hitSize)
                 .offset(x: screenPosition.x - hitSize / 2, y: screenPosition.y - hitSize / 2))
-            .allowsHitTesting(interactive)
             .gesture(
                 interactive ?
                 DragGesture(minimumDistance: 3)
