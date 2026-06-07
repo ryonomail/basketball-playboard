@@ -3,39 +3,42 @@ import SwiftUI
 struct PlayerMarkerView: View {
     let player: Player
     let isSelected: Bool
+    var scale: CGFloat = 1.0
 
     private var teamColor: Color {
         player.team == .home ? .blue : .red
     }
 
+    private var bodySize: CGFloat { 30 * scale }
+    private var armsFrame: CGFloat { 40 * scale }
+    private var outerFrame: CGFloat { 90 * scale }
+
     var body: some View {
         ZStack {
-            // Arms that rotate with facing
             ArmsShape()
-                .stroke(teamColor, style: StrokeStyle(lineWidth: 5, lineCap: .round))
-                .frame(width: 40, height: 40)
+                .stroke(teamColor, style: StrokeStyle(lineWidth: 5 * scale, lineCap: .round))
+                .frame(width: armsFrame, height: armsFrame)
                 .rotationEffect(.radians(player.facing))
 
-            // Body circle
             Circle()
                 .fill(teamColor)
-                .frame(width: 30, height: 30)
+                .frame(width: bodySize, height: bodySize)
                 .overlay(
-                    Circle().stroke(isSelected ? Color.yellow : Color.white, lineWidth: isSelected ? 3 : 1.5)
+                    Circle().stroke(isSelected ? Color.yellow : Color.white,
+                                    lineWidth: isSelected ? 3 * scale : 1.5 * scale)
                 )
                 .overlay(
                     Text(player.number)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(.system(size: 14 * scale, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                 )
         }
-        .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-        .frame(width: 90, height: 90)
-        .contentShape(Circle().size(width: 90, height: 90))
+        .shadow(color: .black.opacity(0.3), radius: 2 * scale, x: 0, y: 1)
+        .frame(width: outerFrame, height: outerFrame)
+        .contentShape(Circle().size(width: outerFrame, height: outerFrame))
     }
 }
 
-// Two arms extending from the body circle, pointing in the "up" direction (facing=0)
 struct ArmsShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
@@ -43,9 +46,8 @@ struct ArmsShape: Shape {
         let cy = rect.midY
         let bodyR: CGFloat = rect.width * 0.37
         let armLen: CGFloat = rect.width * 0.55
-        let spread: CGFloat = .pi / 3.2 // angle from forward direction
+        let spread: CGFloat = .pi / 3.2
 
-        // Left arm: from body edge, angled forward-left
         let lStartX = cx + bodyR * sin(-spread)
         let lStartY = cy - bodyR * cos(-spread)
         let lEndX = cx + (bodyR + armLen) * sin(-spread)
@@ -53,7 +55,6 @@ struct ArmsShape: Shape {
         path.move(to: CGPoint(x: lStartX, y: lStartY))
         path.addLine(to: CGPoint(x: lEndX, y: lEndY))
 
-        // Right arm: from body edge, angled forward-right
         let rStartX = cx + bodyR * sin(spread)
         let rStartY = cy - bodyR * cos(spread)
         let rEndX = cx + (bodyR + armLen) * sin(spread)
@@ -69,6 +70,7 @@ struct InteractivePlayerView: View {
     let player: Player
     let isSelected: Bool
     let screenPosition: CGPoint
+    var scale: CGFloat = 1.0
     var interactive: Bool = true
     var onMove: ((CGPoint) -> Void)? = nil
     var onRotate: ((Double) -> Void)? = nil
@@ -80,11 +82,14 @@ struct InteractivePlayerView: View {
         case undecided, move, rotate
     }
 
+    private var hitSize: CGFloat { 90 * scale }
+    private var moveThreshold: CGFloat { 16 * scale }
+
     var body: some View {
-        PlayerMarkerView(player: player, isSelected: isSelected)
+        PlayerMarkerView(player: player, isSelected: isSelected, scale: scale)
             .position(screenPosition)
-            .contentShape(Circle().size(width: 90, height: 90)
-                .offset(x: screenPosition.x - 40, y: screenPosition.y - 40))
+            .contentShape(Circle().size(width: hitSize, height: hitSize)
+                .offset(x: screenPosition.x - hitSize / 2, y: screenPosition.y - hitSize / 2))
             .gesture(
                 interactive ?
                 DragGesture(minimumDistance: 3)
@@ -94,7 +99,7 @@ struct InteractivePlayerView: View {
                                 value.startLocation.x - screenPosition.x,
                                 value.startLocation.y - screenPosition.y
                             )
-                            gestureMode = startDist > 16 ? .rotate : .move
+                            gestureMode = startDist > moveThreshold ? .rotate : .move
                         }
 
                         switch gestureMode {
@@ -128,7 +133,6 @@ struct VisionConeLayer: View {
     let isPortrait: Bool
     let courtMode: CourtMode
 
-    // 10m in screen pixels (court across = 15m)
     private var visionRadius: CGFloat {
         let metersPerPixel: CGFloat
         if isPortrait {
@@ -156,7 +160,7 @@ struct VisionConeLayer: View {
 
     var body: some View {
         Canvas { context, size in
-            let spread: CGFloat = .pi / 3 // 60°
+            let spread: CGFloat = .pi / 3
             let segments = 30
             let rings = 20
 
@@ -165,14 +169,12 @@ struct VisionConeLayer: View {
                 let baseColor: Color = player.team == .home ? .blue : .red
                 let facing = player.facing
 
-                // Draw concentric arc strips from outer to inner for gradient effect
                 for r in (0..<rings).reversed() {
                     let outerR = visionRadius * CGFloat(r + 1) / CGFloat(rings)
                     let innerR = visionRadius * CGFloat(r) / CGFloat(rings)
                     let alpha = 0.18 * (1.0 - CGFloat(r) / CGFloat(rings))
 
                     var strip = Path()
-                    // Outer arc
                     for i in 0...segments {
                         let t = CGFloat(i) / CGFloat(segments)
                         let angle = facing - spread / 2 + t * spread - .pi / 2
@@ -181,7 +183,6 @@ struct VisionConeLayer: View {
                         if i == 0 { strip.move(to: CGPoint(x: x, y: y)) }
                         else { strip.addLine(to: CGPoint(x: x, y: y)) }
                     }
-                    // Inner arc (reversed)
                     for i in (0...segments).reversed() {
                         let t = CGFloat(i) / CGFloat(segments)
                         let angle = facing - spread / 2 + t * spread - .pi / 2
@@ -199,6 +200,9 @@ struct VisionConeLayer: View {
 
 struct BallView: View {
     let isSelected: Bool
+    var scale: CGFloat = 1.0
+
+    private var ballSize: CGFloat { 28 * scale }
 
     var body: some View {
         ZStack {
@@ -208,16 +212,16 @@ struct BallView: View {
                         colors: [Color(red: 1.0, green: 0.55, blue: 0.1), Color(red: 0.8, green: 0.35, blue: 0.0)],
                         center: .init(x: 0.35, y: 0.35),
                         startRadius: 0,
-                        endRadius: 18
+                        endRadius: ballSize * 0.64
                     )
                 )
-                .frame(width: 28, height: 28)
+                .frame(width: ballSize, height: ballSize)
 
             Canvas { context, size in
                 let cx = size.width / 2
                 let cy = size.height / 2
                 let r = size.width / 2 - 1
-                let style = StrokeStyle(lineWidth: 1.0, lineCap: .round)
+                let style = StrokeStyle(lineWidth: 1.0 * scale, lineCap: .round)
                 let color: Color = .black.opacity(0.45)
 
                 var vLine = Path()
@@ -246,14 +250,14 @@ struct BallView: View {
                 )
                 context.stroke(rightCurve, with: .color(color), style: style)
             }
-            .frame(width: 28, height: 28)
+            .frame(width: ballSize, height: ballSize)
 
             if isSelected {
                 Circle()
-                    .stroke(Color.yellow, lineWidth: 3)
-                    .frame(width: 34, height: 34)
+                    .stroke(Color.yellow, lineWidth: 3 * scale)
+                    .frame(width: ballSize + 6 * scale, height: ballSize + 6 * scale)
             }
         }
-        .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+        .shadow(color: .black.opacity(0.3), radius: 2 * scale, x: 0, y: 1)
     }
 }

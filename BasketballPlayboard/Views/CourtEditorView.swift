@@ -219,6 +219,9 @@ struct CourtEditorView: View {
                 x: (geo.size.width - cs.width) / 2,
                 y: (geo.size.height - cs.height) / 2
             )
+            // Scale factor: base design is for ~400px court width
+            let courtW = isPortrait ? cs.width : (courtMode == .full ? cs.height : cs.width)
+            let uiScale = max(0.6, min(1.5, courtW / 400))
 
             ZStack {
                 Rectangle()
@@ -259,7 +262,7 @@ struct CourtEditorView: View {
                 }
 
                 // Ball
-                BallView(isSelected: draggingBall)
+                BallView(isSelected: draggingBall, scale: uiScale)
                     .position(courtToScreen(ball.position, cs: cs, origin: origin, isPortrait: isPortrait))
                     .gesture(
                         editorMode == .move ?
@@ -279,6 +282,7 @@ struct CourtEditorView: View {
                         player: player,
                         isSelected: selectedPlayerID == player.id,
                         screenPosition: screenPos,
+                        scale: uiScale,
                         interactive: editorMode == .move,
                         onMove: editorMode == .move ? { location in
                             selectedPlayerID = player.id
