@@ -41,6 +41,11 @@ struct CourtEditorView: View {
     @State private var playbackTime: TimeInterval = 0
     @State private var playbackTimer: Timer? = nil
 
+    // Export
+    @State private var isExporting = false
+    @State private var exportedVideoURL: URL? = nil
+    @State private var showShareSheet = false
+
     var body: some View {
         GeometryReader { geo in
             let isPortrait = geo.size.height > geo.size.width
@@ -72,6 +77,11 @@ struct CourtEditorView: View {
         }
         .sheet(isPresented: $showSaveSheet) { saveSheet }
         .sheet(isPresented: $showLoadSheet) { loadSheet }
+        .sheet(isPresented: $showShareSheet) {
+            if let url = exportedVideoURL {
+                ShareSheet(items: [url])
+            }
+        }
         .onDisappear {
             recordingTimer?.invalidate()
             recordingTimer = nil
@@ -487,6 +497,20 @@ struct CourtEditorView: View {
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundStyle(.secondary)
                     .frame(width: 40)
+                Button { exportVideo() } label: {
+                    if isExporting {
+                        ProgressView()
+                            .frame(width: btnSize, height: btnSize)
+                    } else {
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: btnSize * 0.35))
+                            .foregroundColor(.primary)
+                            .frame(width: btnSize, height: btnSize)
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(btnSize * 0.2)
+                    }
+                }
+                .disabled(isExporting)
                 Button {
                     stopPlayback()
                     playbackPlay = nil
@@ -514,6 +538,20 @@ struct CourtEditorView: View {
                 Text(String(format: "%.1fs", playbackTime))
                     .font(.system(size: 10, design: .monospaced))
                     .foregroundStyle(.secondary)
+                Button { exportVideo() } label: {
+                    if isExporting {
+                        ProgressView()
+                            .frame(width: btnSize, height: btnSize)
+                    } else {
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: btnSize * 0.35))
+                            .foregroundColor(.primary)
+                            .frame(width: btnSize, height: btnSize)
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(btnSize * 0.2)
+                    }
+                }
+                .disabled(isExporting)
                 Button {
                     stopPlayback()
                     playbackPlay = nil
@@ -525,6 +563,24 @@ struct CourtEditorView: View {
                         .background(.ultraThinMaterial)
                         .cornerRadius(btnSize * 0.2)
                 }
+            }
+        }
+    }
+
+    private func exportVideo() {
+        guard let play = playbackPlay, !isExporting else { return }
+        stopPlayback()
+        isExporting = true
+        VideoExporter.export(
+            play: play,
+            courtMode: courtMode,
+            showHomeVision: showHomeVision,
+            showAwayVision: showAwayVision
+        ) { url in
+            isExporting = false
+            if let url = url {
+                exportedVideoURL = url
+                showShareSheet = true
             }
         }
     }
@@ -916,4 +972,12 @@ struct LinePreview: View {
         arrow.addLine(to: CGPoint(x: tip.x - len * cos(angle + spread), y: tip.y - len * sin(angle + spread)))
         context.stroke(arrow, with: .color(color), style: StrokeStyle(lineWidth: 2, lineCap: .round))
     }
+}
+
+struct ShareSheet: UIViewControllerRepresentable {
+    let items: [Any]
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    }
+    func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
 }

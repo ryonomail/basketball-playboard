@@ -18,6 +18,7 @@
 		D4767706DCBAEAA3A5DB4EE6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13A0464536F3A37A055C80CA /* Assets.xcassets */; };
 		D4C0ECF8030B8F9BEBF2C290 /* CourtEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D04C3CAFF91D0F724D218984 /* CourtEditorView.swift */; };
 		E9DA2FEDB1749AD5F864C73F /* PlayerMarkerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A6321FD2C03AA71CDF0885 /* PlayerMarkerView.swift */; };
+		F6EE3A17C8A6CA9774134B1B /* VideoExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC184CED852FDE521668D042 /* VideoExporter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 		71CDF3779A2BBFF53B1DCBFC /* Play.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Play.swift; sourceTree = "<group>"; };
 		814DD588312A3FD0DFF278E6 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		9B70D76E3C068E89AFEB2BED /* BasketballPlayboard.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BasketballPlayboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC184CED852FDE521668D042 /* VideoExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoExporter.swift; sourceTree = "<group>"; };
 		B8222573139CB6BC54CD9F2E /* PlayStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayStore.swift; sourceTree = "<group>"; };
 		B8758BEF8FBCF342D22D5F6E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C89D1CC036922ABC065E0BA0 /* BasketballPlayboardApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketballPlayboardApp.swift; sourceTree = "<group>"; };
@@ -45,6 +47,7 @@
 				71CDF3779A2BBFF53B1DCBFC /* Play.swift */,
 				814DD588312A3FD0DFF278E6 /* Player.swift */,
 				B8222573139CB6BC54CD9F2E /* PlayStore.swift */,
+				AC184CED852FDE521668D042 /* VideoExporter.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -176,6 +179,7 @@
 				540E3B6C1FB3AF66612218AF /* PlayStore.swift in Sources */,
 				D1C6ACE83FF339BD694FB7A9 /* Player.swift in Sources */,
 				E9DA2FEDB1749AD5F864C73F /* PlayerMarkerView.swift in Sources */,
+				F6EE3A17C8A6CA9774134B1B /* VideoExporter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
