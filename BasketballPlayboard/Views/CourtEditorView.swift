@@ -373,6 +373,10 @@ struct CourtEditorView: View {
                     snapBallToPlayer1(cs: cs, origin: origin, isPortrait: isPortrait)
                 }
             }
+            .onChange(of: geo.size.width) { _ in
+                updateFacingsIfNeeded(isPortrait: isPortrait)
+                updateAttachedBallsAll(cs: cs, origin: origin, isPortrait: isPortrait)
+            }
         }
     }
 
@@ -568,10 +572,13 @@ struct CourtEditorView: View {
 
     @State private var needsSnap = true
     @State private var needsFacingUpdate = true
+    @State private var lastFacingPortrait: Bool? = nil
 
     private func updateFacingsIfNeeded(isPortrait: Bool) {
-        guard needsFacingUpdate else { return }
+        let orientationChanged = lastFacingPortrait != nil && lastFacingPortrait != isPortrait && courtMode == .full
+        guard needsFacingUpdate || orientationChanged else { return }
         needsFacingUpdate = false
+        lastFacingPortrait = isPortrait
         let ring = CGPoint(x: 0.5, y: 0)
         let isLandscapeFull = !isPortrait && courtMode == .full
         for i in players.indices {
@@ -606,6 +613,15 @@ struct CourtEditorView: View {
             let hp = handPosition(for: pg, hand: .right, cs: cs, origin: origin, isPortrait: isPortrait)
             balls[bi].position = hp
             ballAttachments[balls[bi].id] = (playerID: pg.id, hand: .right)
+        }
+    }
+
+    private func updateAttachedBallsAll(cs: CGSize, origin: CGPoint, isPortrait: Bool) {
+        for (ballID, attachment) in ballAttachments {
+            if let bi = balls.firstIndex(where: { $0.id == ballID }),
+               let player = players.first(where: { $0.id == attachment.playerID }) {
+                balls[bi].position = handPosition(for: player, hand: attachment.hand, cs: cs, origin: origin, isPortrait: isPortrait)
+            }
         }
     }
 
