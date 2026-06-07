@@ -3,6 +3,7 @@ import CoreGraphics
 import SwiftUI
 
 enum LineType: String, Codable, CaseIterable {
+    case plain
     case cut
     case pass
     case dribble
@@ -10,6 +11,7 @@ enum LineType: String, Codable, CaseIterable {
 
     var displayName: String {
         switch self {
+        case .plain: return "ライン"
         case .cut: return "カット"
         case .pass: return "パス"
         case .dribble: return "ドリブル"
@@ -19,6 +21,7 @@ enum LineType: String, Codable, CaseIterable {
 
     var systemImage: String {
         switch self {
+        case .plain: return "line.diagonal"
         case .cut: return "arrow.right"
         case .pass: return "arrow.right.dotted"
         case .dribble: return "water.waves"

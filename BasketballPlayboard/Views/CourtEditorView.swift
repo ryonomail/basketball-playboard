@@ -524,6 +524,8 @@ struct LinePreview: View {
 
             let color: Color = .primary
             switch type {
+            case .plain:
+                context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
             case .cut:
                 context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
                 drawArrow(context: context, at: CGPoint(x: size.width - inset, y: y), angle: 0, color: color)

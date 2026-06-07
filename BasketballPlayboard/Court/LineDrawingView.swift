@@ -13,6 +13,10 @@ struct LineDrawingView: View {
                 let pts = line.points.map { mapPoint($0, size: size) }
 
                 switch line.type {
+                case .plain:
+                    let path = smoothPath(points: pts)
+                    context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+
                 case .cut:
                     let path = smoothPath(points: pts)
                     context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
