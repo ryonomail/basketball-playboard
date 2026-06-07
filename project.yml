@@ -33,3 +33,15 @@ targets:
         CURRENT_PROJECT_VERSION: "1"
         PRODUCT_BUNDLE_IDENTIFIER: com.ryonomail.BasketballPlayboard
         CODE_SIGN_STYLE: Automatic
+
+  BasketballPlayboardUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - BasketballPlayboardUITests
+    dependencies:
+      - target: BasketballPlayboard
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        CODE_SIGN_STYLE: Automatic

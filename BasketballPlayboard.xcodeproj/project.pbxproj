@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0049ECF2C96D21C19365F9BE /* BasketballPlayboardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D1CC036922ABC065E0BA0 /* BasketballPlayboardApp.swift */; };
 		158403CDA12083B81106B834 /* Play.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71CDF3779A2BBFF53B1DCBFC /* Play.swift */; };
+		26627F771C5BA33984DCB0D3 /* ScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DED42B0D8B988EFB4AEE7A7 /* ScreenshotTests.swift */; };
 		3E509660BEFAF91A853091CA /* Formation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C84EFE8B5D5170C4B717A7 /* Formation.swift */; };
 		540E3B6C1FB3AF66612218AF /* PlayStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8222573139CB6BC54CD9F2E /* PlayStore.swift */; };
 		83B25B0CA997616A4669E5A1 /* DrawingLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BB693D80B688CC98079666 /* DrawingLine.swift */; };
@@ -21,11 +22,22 @@
 		F6EE3A17C8A6CA9774134B1B /* VideoExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC184CED852FDE521668D042 /* VideoExporter.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		A696F376E9A9132A758CDFF2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DF0F70CC0FD699FFE47462D7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2B50354FF0E6B4CF2CF1B30C;
+			remoteInfo = BasketballPlayboard;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		071E819AF15AA14F8C9904F3 /* CourtRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourtRenderer.swift; sourceTree = "<group>"; };
 		07A6321FD2C03AA71CDF0885 /* PlayerMarkerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerMarkerView.swift; sourceTree = "<group>"; };
 		13A0464536F3A37A055C80CA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1A7CBD47EE1FD5CC9B6D72E0 /* LineDrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineDrawingView.swift; sourceTree = "<group>"; };
+		1DED42B0D8B988EFB4AEE7A7 /* ScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotTests.swift; sourceTree = "<group>"; };
 		64C84EFE8B5D5170C4B717A7 /* Formation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formation.swift; sourceTree = "<group>"; };
 		71CDF3779A2BBFF53B1DCBFC /* Play.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Play.swift; sourceTree = "<group>"; };
 		814DD588312A3FD0DFF278E6 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
@@ -35,6 +47,7 @@
 		B8758BEF8FBCF342D22D5F6E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C89D1CC036922ABC065E0BA0 /* BasketballPlayboardApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketballPlayboardApp.swift; sourceTree = "<group>"; };
 		D04C3CAFF91D0F724D218984 /* CourtEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourtEditorView.swift; sourceTree = "<group>"; };
+		D475961A006F11CEA702A830 /* BasketballPlayboardUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BasketballPlayboardUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2BB693D80B688CC98079666 /* DrawingLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingLine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -52,6 +65,14 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		4CAE9A8EB3C7EC00063184B3 /* BasketballPlayboardUITests */ = {
+			isa = PBXGroup;
+			children = (
+				1DED42B0D8B988EFB4AEE7A7 /* ScreenshotTests.swift */,
+			);
+			path = BasketballPlayboardUITests;
+			sourceTree = "<group>";
+		};
 		649F86F3889EB98F0CF6113F /* Court */ = {
 			isa = PBXGroup;
 			children = (
@@ -66,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				9B70D76E3C068E89AFEB2BED /* BasketballPlayboard.app */,
+				D475961A006F11CEA702A830 /* BasketballPlayboardUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				C359F44EFCBAFD8BB437A94B /* BasketballPlayboard */,
+				4CAE9A8EB3C7EC00063184B3 /* BasketballPlayboardUITests */,
 				AD9C1AAF3D34C006CD7F75C0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -102,6 +125,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		05A181794B170DB46D25CC81 /* BasketballPlayboardUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 16B37ACF19040E90276D386E /* Build configuration list for PBXNativeTarget "BasketballPlayboardUITests" */;
+			buildPhases = (
+				148A4EB1E7C78F82653CC2A1 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DD242058A4DAEE589FE3D338 /* PBXTargetDependency */,
+			);
+			name = BasketballPlayboardUITests;
+			packageProductDependencies = (
+			);
+			productName = BasketballPlayboardUITests;
+			productReference = D475961A006F11CEA702A830 /* BasketballPlayboardUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		2B50354FF0E6B4CF2CF1B30C /* BasketballPlayboard */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CAA2DB6B3BDCAAE68E2AD9DB /* Build configuration list for PBXNativeTarget "BasketballPlayboard" */;
@@ -129,6 +170,10 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
+					05A181794B170DB46D25CC81 = {
+						ProvisioningStyle = Automatic;
+						TestTargetID = 2B50354FF0E6B4CF2CF1B30C;
+					};
 					2B50354FF0E6B4CF2CF1B30C = {
 						ProvisioningStyle = Automatic;
 					};
@@ -149,6 +194,7 @@
 			projectRoot = "";
 			targets = (
 				2B50354FF0E6B4CF2CF1B30C /* BasketballPlayboard */,
+				05A181794B170DB46D25CC81 /* BasketballPlayboardUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -165,6 +211,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		148A4EB1E7C78F82653CC2A1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				26627F771C5BA33984DCB0D3 /* ScreenshotTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FC8AD6469F0E6109A26C082C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -184,6 +238,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DD242058A4DAEE589FE3D338 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2B50354FF0E6B4CF2CF1B30C /* BasketballPlayboard */;
+			targetProxy = A696F376E9A9132A758CDFF2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		120AA35A015A3FF4E5068152 /* Debug */ = {
@@ -270,6 +332,24 @@
 			};
 			name = Debug;
 		};
+		656EFA8C5A57E53C92950D3D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ryonomail.BasketballPlayboardUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BasketballPlayboard;
+			};
+			name = Debug;
+		};
 		6A7B792D2969980DD13338C1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -347,9 +427,36 @@
 			};
 			name = Release;
 		};
+		F88D5208C35FB7227772CA4E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ryonomail.BasketballPlayboardUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BasketballPlayboard;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		16B37ACF19040E90276D386E /* Build configuration list for PBXNativeTarget "BasketballPlayboardUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				656EFA8C5A57E53C92950D3D /* Debug */,
+				F88D5208C35FB7227772CA4E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		B9C98C1AAC80BDBB7048BEDC /* Build configuration list for PBXProject "BasketballPlayboard" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
