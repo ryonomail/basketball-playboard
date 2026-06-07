@@ -24,18 +24,18 @@ struct Formation {
 
     static func halfCourtPlayers() -> [Player] {
         let offense: [(String, CGPoint)] = [
-            ("1", CGPoint(x: 0.50, y: 0.62)),
-            ("2", CGPoint(x: 0.78, y: 0.48)),
-            ("3", CGPoint(x: 0.22, y: 0.48)),
-            ("4", CGPoint(x: 0.93, y: 0.12)),
-            ("5", CGPoint(x: 0.07, y: 0.12)),
+            ("1", CGPoint(x: 0.50, y: 0.70)),  // Top (above 3P arc)
+            ("2", CGPoint(x: 0.82, y: 0.52)),  // Right 45
+            ("3", CGPoint(x: 0.18, y: 0.52)),  // Left 45
+            ("4", CGPoint(x: 0.94, y: 0.08)),  // Right corner
+            ("5", CGPoint(x: 0.06, y: 0.08)),  // Left corner
         ]
         let defense: [(String, CGPoint)] = [
-            ("1", CGPoint(x: 0.50, y: 0.55)),
-            ("2", CGPoint(x: 0.73, y: 0.42)),
-            ("3", CGPoint(x: 0.27, y: 0.42)),
-            ("4", CGPoint(x: 0.88, y: 0.12)),
-            ("5", CGPoint(x: 0.12, y: 0.12)),
+            ("1", CGPoint(x: 0.50, y: 0.60)),
+            ("2", CGPoint(x: 0.75, y: 0.45)),
+            ("3", CGPoint(x: 0.25, y: 0.45)),
+            ("4", CGPoint(x: 0.88, y: 0.08)),
+            ("5", CGPoint(x: 0.12, y: 0.08)),
         ]
         var players: [Player] = []
         for (i, (num, pos)) in offense.enumerated() {
@@ -53,18 +53,18 @@ struct Formation {
 
     static func fullCourtPlayers() -> [Player] {
         let offense: [(String, CGPoint)] = [
-            ("1", CGPoint(x: 0.50, y: 0.31)),
-            ("2", CGPoint(x: 0.78, y: 0.24)),
-            ("3", CGPoint(x: 0.22, y: 0.24)),
-            ("4", CGPoint(x: 0.93, y: 0.06)),
-            ("5", CGPoint(x: 0.07, y: 0.06)),
+            ("1", CGPoint(x: 0.50, y: 0.35)),  // Top
+            ("2", CGPoint(x: 0.82, y: 0.26)),  // Right 45
+            ("3", CGPoint(x: 0.18, y: 0.26)),  // Left 45
+            ("4", CGPoint(x: 0.94, y: 0.04)),  // Right corner
+            ("5", CGPoint(x: 0.06, y: 0.04)),  // Left corner
         ]
         let defense: [(String, CGPoint)] = [
-            ("1", CGPoint(x: 0.50, y: 0.275)),
-            ("2", CGPoint(x: 0.73, y: 0.21)),
-            ("3", CGPoint(x: 0.27, y: 0.21)),
-            ("4", CGPoint(x: 0.88, y: 0.06)),
-            ("5", CGPoint(x: 0.12, y: 0.06)),
+            ("1", CGPoint(x: 0.50, y: 0.30)),
+            ("2", CGPoint(x: 0.75, y: 0.225)),
+            ("3", CGPoint(x: 0.25, y: 0.225)),
+            ("4", CGPoint(x: 0.88, y: 0.04)),
+            ("5", CGPoint(x: 0.12, y: 0.04)),
         ]
         var players: [Player] = []
         for (i, (num, pos)) in offense.enumerated() {
