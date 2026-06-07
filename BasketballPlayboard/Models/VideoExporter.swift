@@ -15,8 +15,9 @@ class VideoExporter {
         let duration = play.duration
         guard duration > 0 else { completion(nil); return }
 
+        let safeName = play.name.replacingOccurrences(of: "[^a-zA-Z0-9_-]", with: "_", options: .regularExpression)
         let outputURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("\(play.name)_\(Int(Date().timeIntervalSince1970)).mp4")
+            .appendingPathComponent("\(safeName)_\(Int(Date().timeIntervalSince1970)).mp4")
 
         try? FileManager.default.removeItem(at: outputURL)
 
@@ -209,13 +210,50 @@ class VideoExporter {
             for line in snapshot.lines {
                 guard line.points.count >= 2 else { continue }
                 let pts = line.points.map { courtToScreen($0) }
-                let path = UIBezierPath()
-                path.move(to: pts[0])
-                for i in 1..<pts.count { path.addLine(to: pts[i]) }
-                line.lineColor.color.uiColor.setStroke()
-                path.lineWidth = 3
-                path.lineCapStyle = .round
-                path.stroke()
+                let uiColor = line.lineColor.color.uiColor
+                uiColor.setStroke()
+
+                switch line.type {
+                case .plain:
+                    let path = UIBezierPath()
+                    path.move(to: pts[0])
+                    for i in 1..<pts.count { path.addLine(to: pts[i]) }
+                    path.lineWidth = 3
+                    path.lineCapStyle = .round
+                    path.stroke()
+
+                case .cut:
+                    let path = UIBezierPath()
+                    path.move(to: pts[0])
+                    for i in 1..<pts.count { path.addLine(to: pts[i]) }
+                    path.lineWidth = 3
+                    path.lineCapStyle = .round
+                    path.stroke()
+                    Self.drawArrowhead(ctx: ctx.cgContext, pts: pts, color: uiColor)
+
+                case .pass:
+                    let path = UIBezierPath()
+                    path.move(to: pts[0])
+                    for i in 1..<pts.count { path.addLine(to: pts[i]) }
+                    path.lineWidth = 3
+                    path.lineCapStyle = .round
+                    path.setLineDash([12, 8], count: 2, phase: 0)
+                    path.stroke()
+                    Self.drawArrowhead(ctx: ctx.cgContext, pts: pts, color: uiColor)
+
+                case .dribble:
+                    Self.drawWavyLine(ctx: ctx.cgContext, pts: pts, color: uiColor, lineWidth: 3)
+                    Self.drawArrowhead(ctx: ctx.cgContext, pts: pts, color: uiColor)
+
+                case .screen:
+                    let path = UIBezierPath()
+                    path.move(to: pts[0])
+                    for i in 1..<pts.count { path.addLine(to: pts[i]) }
+                    path.lineWidth = 3.5
+                    path.lineCapStyle = .round
+                    path.stroke()
+                    Self.drawScreenBar(ctx: ctx.cgContext, pts: pts, color: uiColor)
+                }
             }
 
             // Draw players
@@ -283,6 +321,87 @@ class VideoExporter {
         }
 
         return buffer
+    }
+    private static func drawArrowhead(ctx: CGContext, pts: [CGPoint], color: UIColor) {
+        guard pts.count >= 2 else { return }
+        let tip = pts.last!
+        var prev = pts[pts.count - 2]
+        for i in stride(from: pts.count - 2, through: 0, by: -1) {
+            if hypot(pts[i].x - tip.x, pts[i].y - tip.y) >= 10 { prev = pts[i]; break }
+        }
+        let angle = atan2(tip.y - prev.y, tip.x - prev.x)
+        let len: CGFloat = 14
+        let spread: CGFloat = .pi / 5
+        ctx.saveGState()
+        color.setStroke()
+        ctx.setLineWidth(3)
+        ctx.setLineCap(.round)
+        ctx.move(to: tip)
+        ctx.addLine(to: CGPoint(x: tip.x - len * cos(angle - spread), y: tip.y - len * sin(angle - spread)))
+        ctx.move(to: tip)
+        ctx.addLine(to: CGPoint(x: tip.x - len * cos(angle + spread), y: tip.y - len * sin(angle + spread)))
+        ctx.strokePath()
+        ctx.restoreGState()
+    }
+
+    private static func drawWavyLine(ctx: CGContext, pts: [CGPoint], color: UIColor, lineWidth: CGFloat) {
+        guard pts.count >= 2 else { return }
+        var totalDist: CGFloat = 0
+        var segments: [(CGPoint, CGFloat)] = [(pts[0], 0)]
+        for i in 1..<pts.count {
+            totalDist += hypot(pts[i].x - pts[i-1].x, pts[i].y - pts[i-1].y)
+            segments.append((pts[i], totalDist))
+        }
+        guard totalDist > 0 else { return }
+        ctx.saveGState()
+        color.setStroke()
+        ctx.setLineWidth(lineWidth)
+        ctx.setLineCap(.round)
+        ctx.setLineJoin(.round)
+        let step: CGFloat = 2
+        let amplitude: CGFloat = 5
+        let wavelength: CGFloat = 12
+        var dist: CGFloat = 0
+        var first = true
+        while dist <= totalDist - 16 {
+            var segIdx = 0
+            for i in 1..<segments.count {
+                if segments[i].1 >= dist { segIdx = i - 1; break }
+            }
+            let (p0, d0) = segments[segIdx]
+            let (p1, d1) = segments[min(segIdx + 1, segments.count - 1)]
+            let segLen = d1 - d0
+            let t = segLen > 0 ? (dist - d0) / segLen : 0
+            let bx = p0.x + (p1.x - p0.x) * t
+            let by = p0.y + (p1.y - p0.y) * t
+            let dx = p1.x - p0.x, dy = p1.y - p0.y
+            let len = hypot(dx, dy)
+            let nx = len > 0 ? -dy / len : 0
+            let ny = len > 0 ? dx / len : 0
+            let wave = sin(dist / wavelength * .pi * 2) * amplitude
+            let px = bx + nx * wave, py = by + ny * wave
+            if first { ctx.move(to: CGPoint(x: px, y: py)); first = false }
+            else { ctx.addLine(to: CGPoint(x: px, y: py)) }
+            dist += step
+        }
+        ctx.strokePath()
+        ctx.restoreGState()
+    }
+
+    private static func drawScreenBar(ctx: CGContext, pts: [CGPoint], color: UIColor) {
+        guard pts.count >= 2 else { return }
+        let tip = pts.last!
+        let prev = pts[pts.count - 2]
+        let angle = atan2(tip.y - prev.y, tip.x - prev.x)
+        let barLen: CGFloat = 12
+        ctx.saveGState()
+        color.setStroke()
+        ctx.setLineWidth(4)
+        ctx.setLineCap(.round)
+        ctx.move(to: CGPoint(x: tip.x - barLen * cos(angle + .pi/2), y: tip.y - barLen * sin(angle + .pi/2)))
+        ctx.addLine(to: CGPoint(x: tip.x + barLen * cos(angle + .pi/2), y: tip.y + barLen * sin(angle + .pi/2)))
+        ctx.strokePath()
+        ctx.restoreGState()
     }
 }
 

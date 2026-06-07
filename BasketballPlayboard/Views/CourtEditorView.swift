@@ -186,10 +186,15 @@ struct CourtEditorView: View {
         }
 
         floatingBtn("folder", size: size) { showLoadSheet = true }
+            .disabled(isRecording)
         floatingBtn("arrow.uturn.backward", size: size) { if !lines.isEmpty { lines.removeLast() } }
+            .disabled(isRecording)
         floatingBtn("trash", color: .red, size: size) { resetBoard() }
+            .disabled(isRecording)
         addPlayerBtn(team: .home, size: size)
+            .disabled(isRecording)
         addPlayerBtn(team: .away, size: size)
+            .disabled(isRecording)
         Button {
             let pos = CGPoint(x: CGFloat.random(in: 0.3...0.7), y: CGFloat.random(in: 0.3...0.7))
             balls.append(Ball(position: pos))
@@ -201,6 +206,7 @@ struct CourtEditorView: View {
                 .background(Color.orange)
                 .cornerRadius(size * 0.2)
         }
+        .disabled(isRecording)
         Button { showHomeVision.toggle() } label: {
             Image(systemName: showHomeVision ? "eye" : "eye.slash")
                 .font(.system(size: size * 0.35, weight: .medium))
