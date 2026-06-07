@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <linearGradient id="court" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e67e22"/>
+      <stop offset="100%" stop-color="#d35400"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+
+  <!-- Court surface -->
+  <rect x="140" y="240" width="744" height="544" rx="12" fill="url(#court)" opacity="0.9"/>
+
+  <!-- Court lines -->
+  <g stroke="#fff" stroke-width="4" fill="none" opacity="0.85">
+    <!-- Outline -->
+    <rect x="140" y="240" width="744" height="544" rx="12"/>
+    <!-- Center line -->
+    <line x1="512" y1="240" x2="512" y2="784"/>
+    <!-- Center circle -->
+    <circle cx="512" cy="512" r="70"/>
+    <!-- Left paint -->
+    <rect x="140" y="400" width="160" height="224"/>
+    <!-- Right paint -->
+    <rect x="724" y="400" width="160" height="224"/>
+    <!-- Left free throw circle -->
+    <circle cx="300" cy="512" r="70"/>
+    <!-- Right free throw circle -->
+    <circle cx="724" cy="512" r="70"/>
+    <!-- Left 3pt arc -->
+    <path d="M 140 340 Q 340 512 140 684"/>
+    <!-- Right 3pt arc -->
+    <path d="M 884 340 Q 684 512 884 684"/>
+  </g>
+
+  <!-- Player 1 (home/blue) -->
+  <circle cx="380" cy="460" r="28" fill="#3498db" stroke="#fff" stroke-width="3"/>
+  <text x="380" y="468" text-anchor="middle" fill="#fff" font-family="-apple-system,sans-serif" font-size="22" font-weight="bold">1</text>
+
+  <!-- Player 2 (home/blue) -->
+  <circle cx="320" cy="560" r="28" fill="#3498db" stroke="#fff" stroke-width="3"/>
+  <text x="320" y="568" text-anchor="middle" fill="#fff" font-family="-apple-system,sans-serif" font-size="22" font-weight="bold">2</text>
+
+  <!-- Player 3 (away/red) -->
+  <circle cx="620" cy="480" r="28" fill="#e74c3c" stroke="#fff" stroke-width="3"/>
+  <text x="620" y="488" text-anchor="middle" fill="#fff" font-family="-apple-system,sans-serif" font-size="22" font-weight="bold">1</text>
+
+  <!-- Player 4 (away/red) -->
+  <circle cx="680" cy="570" r="28" fill="#e74c3c" stroke="#fff" stroke-width="3"/>
+  <text x="680" y="578" text-anchor="middle" fill="#fff" font-family="-apple-system,sans-serif" font-size="22" font-weight="bold">2</text>
+
+  <!-- Tactical arrow -->
+  <g stroke="#2ecc71" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.9">
+    <path d="M 380 460 Q 440 400 520 420"/>
+    <path d="M 505 408 L 520 420 L 504 430"/>
+  </g>
+
+  <!-- Dashed pass line -->
+  <line x1="320" y1="560" x2="450" y2="500" stroke="#fff" stroke-width="4" stroke-dasharray="12,8" opacity="0.7" stroke-linecap="round"/>
+
+  <!-- Basketball -->
+  <circle cx="395" cy="448" r="14" fill="#f39c12" stroke="#e67e22" stroke-width="2"/>
+  <line x1="395" y1="434" x2="395" y2="462" stroke="#d35400" stroke-width="1.2" opacity="0.5"/>
+  <line x1="381" y1="448" x2="409" y2="448" stroke="#d35400" stroke-width="1.2" opacity="0.5"/>
+</svg>
