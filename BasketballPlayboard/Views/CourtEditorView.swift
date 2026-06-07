@@ -297,13 +297,10 @@ struct CourtEditorView: View {
                         },
                         onMoveEnd: {}
                     )
-                    .simultaneousGesture(
-                        LongPressGesture(minimumDuration: 0.5)
-                            .onEnded { _ in
-                                editingPlayerID = player.id
-                                editingNumber = player.number
-                            }
-                    )
+                    .onTapGesture(count: 3) {
+                        editingPlayerID = player.id
+                        editingNumber = player.number
+                    }
                 }
             }
             .contentShape(Rectangle())
