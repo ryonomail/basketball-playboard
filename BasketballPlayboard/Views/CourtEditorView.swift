@@ -43,20 +43,20 @@ struct CourtEditorView: View {
                 }
             }
         }
-        .alert("背番号を変更", isPresented: Binding(
+        .alert("Edit Number", isPresented: Binding(
             get: { editingPlayerID != nil },
             set: { if !$0 { editingPlayerID = nil } }
         )) {
-            TextField("番号", text: $editingNumber)
+            TextField("Number", text: $editingNumber)
                 .keyboardType(.numberPad)
             Button("OK") { applyNumberEdit() }
-            Button("削除", role: .destructive) {
+            Button("Delete", role: .destructive) {
                 if let pid = editingPlayerID {
                     players.removeAll { $0.id == pid }
                 }
                 editingPlayerID = nil
             }
-            Button("キャンセル", role: .cancel) { editingPlayerID = nil }
+            Button("Cancel", role: .cancel) { editingPlayerID = nil }
         }
         .sheet(isPresented: $showSaveSheet) { saveSheet }
         .sheet(isPresented: $showLoadSheet) { loadSheet }
@@ -437,7 +437,7 @@ struct CourtEditorView: View {
             needsFacingUpdate = true
             lines = []
         } label: {
-            Text(courtMode == .half ? "ハーフ" : "フル")
+            Text(courtMode == .half ? "Half" : "Full")
                 .font(.system(size: size * 0.35, weight: .semibold))
                 .foregroundColor(.primary)
                 .frame(width: size * 1.3, height: size)
@@ -461,14 +461,14 @@ struct CourtEditorView: View {
 
     private var saveSheet: some View {
         NavigationStack {
-            Form { TextField("プレイ名", text: $saveName) }
-            .navigationTitle("保存").navigationBarTitleDisplayMode(.inline)
+            Form { TextField("Play Name", text: $saveName) }
+            .navigationTitle("Save").navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("キャンセル") { showSaveSheet = false } }
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { showSaveSheet = false } }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
+                    Button("Save") {
                         let frame = PlayFrame(players: players, balls: balls, lines: lines)
-                        let play = Play(name: saveName.isEmpty ? "プレイ \(playStore.plays.count + 1)" : saveName, frames: [frame])
+                        let play = Play(name: saveName.isEmpty ? "Play \(playStore.plays.count + 1)" : saveName, frames: [frame])
                         playStore.save(play)
                         saveName = ""
                         showSaveSheet = false
@@ -483,7 +483,7 @@ struct CourtEditorView: View {
         NavigationStack {
             List {
                 if playStore.plays.isEmpty {
-                    Text("保存されたプレイがありません").foregroundStyle(.secondary)
+                    Text("No saved plays").foregroundStyle(.secondary)
                 } else {
                     ForEach(playStore.plays) { play in
                         Button {
@@ -500,9 +500,9 @@ struct CourtEditorView: View {
                     }
                 }
             }
-            .navigationTitle("読み込み").navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Load").navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("閉じる") { showLoadSheet = false } }
+                ToolbarItem(placement: .cancellationAction) { Button("Close") { showLoadSheet = false } }
             }
         }
         .presentationDetents([.medium])

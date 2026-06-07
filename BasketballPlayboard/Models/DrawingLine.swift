@@ -11,11 +11,11 @@ enum LineType: String, Codable, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .plain: return "ライン"
-        case .cut: return "カット"
-        case .pass: return "パス"
-        case .dribble: return "ドリブル"
-        case .screen: return "スクリーン"
+        case .plain: return "Line"
+        case .cut: return "Cut"
+        case .pass: return "Pass"
+        case .dribble: return "Dribble"
+        case .screen: return "Screen"
         }
     }
 

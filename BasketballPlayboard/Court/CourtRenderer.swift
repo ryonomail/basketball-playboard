@@ -6,8 +6,8 @@ enum CourtMode: String, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .half: return "ハーフ"
-        case .full: return "フル"
+        case .half: return "Half"
+        case .full: return "Full"
         }
     }
 
