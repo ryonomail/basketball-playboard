@@ -3,13 +3,13 @@ import Foundation
 struct PlayFrame: Identifiable, Codable {
     let id: UUID
     var players: [Player]
-    var ball: Ball
+    var balls: [Ball]
     var lines: [DrawingLine]
 
-    init(id: UUID = UUID(), players: [Player], ball: Ball = Ball(), lines: [DrawingLine] = []) {
+    init(id: UUID = UUID(), players: [Player], balls: [Ball] = [Ball()], lines: [DrawingLine] = []) {
         self.id = id
         self.players = players
-        self.ball = ball
+        self.balls = balls
         self.lines = lines
     }
 }

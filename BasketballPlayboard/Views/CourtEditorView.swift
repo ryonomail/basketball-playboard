@@ -10,7 +10,7 @@ struct CourtEditorView: View {
     @EnvironmentObject var playStore: PlayStore
 
     @State private var players: [Player] = Formation.allPlayers(for: .half)
-    @State private var ball: Ball = Ball()
+    @State private var balls: [Ball] = [Ball()]
     @State private var lines: [DrawingLine] = []
     @State private var courtMode: CourtMode = .half
     @State private var editorMode: EditorMode = .move
@@ -18,7 +18,7 @@ struct CourtEditorView: View {
     @State private var selectedLineColor: LineColor = .black
     @State private var currentDrawing: DrawingLine? = nil
     @State private var selectedPlayerID: UUID? = nil
-    @State private var draggingBall = false
+    @State private var draggingBallID: UUID? = nil
     @State private var editingPlayerID: UUID? = nil
     @State private var editingNumber: String = ""
     @State private var showSaveSheet = false
@@ -128,6 +128,17 @@ struct CourtEditorView: View {
         floatingBtn("trash", color: .red, size: size) { resetBoard() }
         addPlayerBtn(team: .home, size: size)
         addPlayerBtn(team: .away, size: size)
+        Button {
+            let pos = CGPoint(x: CGFloat.random(in: 0.3...0.7), y: CGFloat.random(in: 0.3...0.7))
+            balls.append(Ball(position: pos))
+        } label: {
+            Image(systemName: "plus.circle")
+                .font(.system(size: size * 0.35, weight: .bold))
+                .foregroundColor(.white)
+                .frame(width: size, height: size)
+                .background(Color.orange)
+                .cornerRadius(size * 0.2)
+        }
         Button { showHomeVision.toggle() } label: {
             Image(systemName: showHomeVision ? "eye" : "eye.slash")
                 .font(.system(size: size * 0.35, weight: .medium))
@@ -263,19 +274,29 @@ struct CourtEditorView: View {
                         .position(x: geo.size.width / 2, y: geo.size.height / 2)
                 }
 
-                // Ball
-                BallView(isSelected: draggingBall, scale: uiScale)
-                    .position(courtToScreen(ball.position, cs: cs, origin: origin, isPortrait: isPortrait))
-                    .gesture(
-                        editorMode == .move ?
-                        DragGesture()
-                            .onChanged { v in
-                                draggingBall = true
-                                ball.position = screenToCourt(v.location, cs: cs, origin: origin, isPortrait: isPortrait)
+                // Balls
+                ForEach(balls) { ball in
+                    BallView(isSelected: draggingBallID == ball.id, scale: uiScale)
+                        .position(courtToScreen(ball.position, cs: cs, origin: origin, isPortrait: isPortrait))
+                        .allowsHitTesting(editorMode == .move)
+                        .gesture(
+                            editorMode == .move ?
+                            DragGesture()
+                                .onChanged { v in
+                                    draggingBallID = ball.id
+                                    if let idx = balls.firstIndex(where: { $0.id == ball.id }) {
+                                        balls[idx].position = screenToCourt(v.location, cs: cs, origin: origin, isPortrait: isPortrait)
+                                    }
+                                }
+                                .onEnded { _ in draggingBallID = nil }
+                            : nil
+                        )
+                        .onTapGesture(count: 3) {
+                            if balls.count > 1 {
+                                balls.removeAll { $0.id == ball.id }
                             }
-                            .onEnded { _ in draggingBall = false }
-                        : nil
-                    )
+                        }
+                }
 
                 // Players
                 ForEach(players) { player in
@@ -389,7 +410,7 @@ struct CourtEditorView: View {
             let newMode: CourtMode = courtMode == .half ? .full : .half
             courtMode = newMode
             players = Formation.allPlayers(for: newMode)
-            ball = Ball()
+            balls = [Ball()]
             lines = []
         } label: {
             Text(courtMode == .half ? "ハーフ" : "フル")
@@ -422,7 +443,7 @@ struct CourtEditorView: View {
                 ToolbarItem(placement: .cancellationAction) { Button("キャンセル") { showSaveSheet = false } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("保存") {
-                        let frame = PlayFrame(players: players, ball: ball, lines: lines)
+                        let frame = PlayFrame(players: players, balls: balls, lines: lines)
                         let play = Play(name: saveName.isEmpty ? "プレイ \(playStore.plays.count + 1)" : saveName, frames: [frame])
                         playStore.save(play)
                         saveName = ""
@@ -444,7 +465,7 @@ struct CourtEditorView: View {
                         Button {
                             if let frame = play.frames.first {
                                 players = frame.players
-                                ball = frame.ball
+                                balls = frame.balls
                                 lines = frame.lines
                             }
                             showLoadSheet = false
@@ -484,7 +505,7 @@ struct CourtEditorView: View {
 
     private func resetBoard() {
         players = Formation.allPlayers(for: courtMode)
-        ball = Ball()
+        balls = [Ball()]
         lines = []
         selectedPlayerID = nil
     }

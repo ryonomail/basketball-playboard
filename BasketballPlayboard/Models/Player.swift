@@ -22,10 +22,12 @@ struct Player: Identifiable, Codable {
     }
 }
 
-struct Ball: Codable, Equatable {
+struct Ball: Identifiable, Codable, Equatable {
+    let id: UUID
     var position: CGPoint
 
-    init(position: CGPoint = CGPoint(x: 0.5, y: 0.35)) {
+    init(id: UUID = UUID(), position: CGPoint = CGPoint(x: 0.5, y: 0.35)) {
+        self.id = id
         self.position = position
     }
 }
