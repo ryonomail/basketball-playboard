@@ -40,18 +40,23 @@ struct Play: Identifiable, Codable {
         guard span > 0 else { return before }
         let t = CGFloat((time - before.timestamp) / span)
 
-        var result = before
+        var result = after
         for i in result.players.indices {
-            if i < after.players.count {
-                result.players[i].position.x = before.players[i].position.x + (after.players[i].position.x - before.players[i].position.x) * t
-                result.players[i].position.y = before.players[i].position.y + (after.players[i].position.y - before.players[i].position.y) * t
-                result.players[i].facing = before.players[i].facing + (after.players[i].facing - before.players[i].facing) * Double(t)
+            if let bi = before.players.firstIndex(where: { $0.id == result.players[i].id }) {
+                let bp = before.players[bi]
+                result.players[i].position.x = bp.position.x + (result.players[i].position.x - bp.position.x) * t
+                result.players[i].position.y = bp.position.y + (result.players[i].position.y - bp.position.y) * t
+                var df = after.players[i].facing - bp.facing
+                while df > .pi { df -= 2 * .pi }
+                while df < -.pi { df += 2 * .pi }
+                result.players[i].facing = bp.facing + df * Double(t)
             }
         }
         for i in result.balls.indices {
-            if i < after.balls.count {
-                result.balls[i].position.x = before.balls[i].position.x + (after.balls[i].position.x - before.balls[i].position.x) * t
-                result.balls[i].position.y = before.balls[i].position.y + (after.balls[i].position.y - before.balls[i].position.y) * t
+            if let bi = before.balls.firstIndex(where: { $0.id == result.balls[i].id }) {
+                let bb = before.balls[bi]
+                result.balls[i].position.x = bb.position.x + (result.balls[i].position.x - bb.position.x) * t
+                result.balls[i].position.y = bb.position.y + (result.balls[i].position.y - bb.position.y) * t
             }
         }
         result.lines = after.lines

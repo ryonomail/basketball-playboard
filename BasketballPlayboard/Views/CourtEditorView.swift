@@ -72,6 +72,12 @@ struct CourtEditorView: View {
         }
         .sheet(isPresented: $showSaveSheet) { saveSheet }
         .sheet(isPresented: $showLoadSheet) { loadSheet }
+        .onDisappear {
+            recordingTimer?.invalidate()
+            recordingTimer = nil
+            playbackTimer?.invalidate()
+            playbackTimer = nil
+        }
     }
 
     // MARK: - Landscape
@@ -324,6 +330,7 @@ struct CourtEditorView: View {
                 ForEach(balls) { ball in
                     BallView(isSelected: draggingBallID == ball.id, scale: uiScale)
                         .position(courtToScreen(ball.position, cs: cs, origin: origin, isPortrait: isPortrait))
+                        .allowsHitTesting(playbackPlay == nil)
                         .gesture(
                             DragGesture()
                                 .onChanged { v in
@@ -354,7 +361,7 @@ struct CourtEditorView: View {
                         isSelected: selectedPlayerID == player.id,
                         screenPosition: screenPos,
                         scale: uiScale,
-                        interactive: true,
+                        interactive: playbackPlay == nil,
                         onMove: { location in
                             selectedPlayerID = player.id
                             let newPos = screenToCourt(location, cs: cs, origin: origin, isPortrait: isPortrait)
@@ -698,7 +705,8 @@ struct CourtEditorView: View {
         }
         if let (playerID, hand, _) = closest {
             ballAttachments[ballID] = (playerID: playerID, hand: hand)
-            let hp = handPosition(for: players.first(where: { $0.id == playerID })!, hand: hand, cs: cs, origin: origin, isPortrait: isPortrait)
+            guard let snapPlayer = players.first(where: { $0.id == playerID }) else { return }
+            let hp = handPosition(for: snapPlayer, hand: hand, cs: cs, origin: origin, isPortrait: isPortrait)
             balls[bi].position = hp
         }
     }

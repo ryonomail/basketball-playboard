@@ -3,7 +3,10 @@ import Foundation
 class PlayStore: ObservableObject {
     @Published var plays: [Play] = []
 
-    private let storageKey = "saved_plays_v2"
+    private var fileURL: URL {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        return docs.appendingPathComponent("saved_plays.json")
+    }
 
     init() {
         load()
@@ -24,15 +27,20 @@ class PlayStore: ObservableObject {
     }
 
     private func persist() {
-        if let data = try? JSONEncoder().encode(plays) {
-            UserDefaults.standard.set(data, forKey: storageKey)
+        do {
+            let data = try JSONEncoder().encode(plays)
+            try data.write(to: fileURL, options: .atomic)
+        } catch {
+            print("PlayStore save error: \(error)")
         }
     }
 
     private func load() {
-        if let data = UserDefaults.standard.data(forKey: storageKey),
-           let decoded = try? JSONDecoder().decode([Play].self, from: data) {
-            plays = decoded
+        do {
+            let data = try Data(contentsOf: fileURL)
+            plays = try JSONDecoder().decode([Play].self, from: data)
+        } catch {
+            plays = []
         }
     }
 }
