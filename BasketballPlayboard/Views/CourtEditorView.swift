@@ -92,21 +92,24 @@ struct CourtEditorView: View {
     private func portraitLayout(geo: GeometryProxy) -> some View {
         VStack(spacing: 0) {
             // Top bar: actions + court mode
-            HStack(spacing: 8) {
-                actionButtons
-                Spacer()
-                courtModeToggle
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    actionButtons
+                    courtModeToggle
+                }
+                .padding(.horizontal, 8)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
+            .frame(height: 46)
 
             // Court
             courtView(isPortrait: true)
 
             // Bottom bar: draw tools
-            drawToolbar(horizontal: true)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
+            ScrollView(.horizontal, showsIndicators: false) {
+                drawToolbar(horizontal: true)
+                    .padding(.horizontal, 8)
+            }
+            .frame(height: 46)
         }
     }
 
