@@ -64,13 +64,15 @@ struct CourtEditorView: View {
 
     private func landscapeLayout(geo: GeometryProxy) -> some View {
         let compact = geo.size.height < 500
-        let toolW: CGFloat = compact ? 46 : 52
+        let btnSize: CGFloat = compact ? 34 : 40
+        let toolW: CGFloat = btnSize + 12
         return HStack(spacing: 0) {
             // Left toolbar: actions + court mode
-            VStack(spacing: compact ? 6 : 10) {
-                actionButtons
-                Spacer()
-                courtModeToggle
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: compact ? 4 : 6) {
+                    courtModeToggle(size: btnSize)
+                    actionButtons(size: btnSize)
+                }
             }
             .frame(width: toolW)
             .padding(.vertical, 6)
@@ -80,7 +82,7 @@ struct CourtEditorView: View {
             courtView(isPortrait: false)
 
             // Right toolbar: draw tools
-            drawToolbar(horizontal: false)
+            drawToolbar(horizontal: false, btnSize: btnSize)
                 .frame(width: toolW)
                 .padding(.vertical, 6)
                 .padding(.trailing, 4)
@@ -90,115 +92,112 @@ struct CourtEditorView: View {
     // MARK: - Portrait
 
     private func portraitLayout(geo: GeometryProxy) -> some View {
-        VStack(spacing: 0) {
-            // Top bar: actions + court mode
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 6) {
-                    actionButtons
-                    courtModeToggle
+        let btnSize: CGFloat = geo.size.width < 400 ? 32 : 38
+        return VStack(spacing: 0) {
+            // Top bar: court mode (fixed) + actions (scrollable)
+            HStack(spacing: 4) {
+                courtModeToggle(size: btnSize)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 4) {
+                        actionButtons(size: btnSize)
+                    }
                 }
-                .padding(.horizontal, 8)
             }
-            .frame(height: 46)
+            .padding(.horizontal, 6)
+            .frame(height: btnSize + 8)
 
             // Court
             courtView(isPortrait: true)
 
             // Bottom bar: draw tools
             ScrollView(.horizontal, showsIndicators: false) {
-                drawToolbar(horizontal: true)
-                    .padding(.horizontal, 8)
+                drawToolbar(horizontal: true, btnSize: btnSize)
+                    .padding(.horizontal, 6)
             }
-            .frame(height: 46)
+            .frame(height: btnSize + 8)
         }
     }
 
     // MARK: - Shared UI
 
-    private var actionButtons: some View {
-        Group {
-            floatingBtn("square.and.arrow.down") { showSaveSheet = true }
-            floatingBtn("folder") { showLoadSheet = true }
-            floatingBtn("arrow.uturn.backward") { if !lines.isEmpty { lines.removeLast() } }
-            floatingBtn("trash", color: .red) { resetBoard() }
-            addPlayerBtn(team: .home)
-            addPlayerBtn(team: .away)
-            Button {
-                showHomeVision.toggle()
-            } label: {
-                Image(systemName: showHomeVision ? "eye" : "eye.slash")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.white)
-                    .frame(width: 40, height: 40)
-                    .background(showHomeVision ? Color.blue : Color.blue.opacity(0.3))
-                    .cornerRadius(8)
-            }
-            Button {
-                showAwayVision.toggle()
-            } label: {
-                Image(systemName: showAwayVision ? "eye" : "eye.slash")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.white)
-                    .frame(width: 40, height: 40)
-                    .background(showAwayVision ? Color.red : Color.red.opacity(0.3))
-                    .cornerRadius(8)
-            }
+    @ViewBuilder
+    private func actionButtons(size: CGFloat) -> some View {
+        floatingBtn("square.and.arrow.down", size: size) { showSaveSheet = true }
+        floatingBtn("folder", size: size) { showLoadSheet = true }
+        floatingBtn("arrow.uturn.backward", size: size) { if !lines.isEmpty { lines.removeLast() } }
+        floatingBtn("trash", color: .red, size: size) { resetBoard() }
+        addPlayerBtn(team: .home, size: size)
+        addPlayerBtn(team: .away, size: size)
+        Button { showHomeVision.toggle() } label: {
+            Image(systemName: showHomeVision ? "eye" : "eye.slash")
+                .font(.system(size: size * 0.35, weight: .medium))
+                .foregroundColor(.white)
+                .frame(width: size, height: size)
+                .background(showHomeVision ? Color.blue : Color.blue.opacity(0.3))
+                .cornerRadius(size * 0.2)
+        }
+        Button { showAwayVision.toggle() } label: {
+            Image(systemName: showAwayVision ? "eye" : "eye.slash")
+                .font(.system(size: size * 0.35, weight: .medium))
+                .foregroundColor(.white)
+                .frame(width: size, height: size)
+                .background(showAwayVision ? Color.red : Color.red.opacity(0.3))
+                .cornerRadius(size * 0.2)
         }
     }
 
-    private func addPlayerBtn(team: Team) -> some View {
+    private func addPlayerBtn(team: Team, size: CGFloat) -> some View {
         Button {
             let count = players.filter { $0.team == team }.count
             let number = "\(count + 1)"
             let pos = CGPoint(x: CGFloat.random(in: 0.3...0.7), y: CGFloat.random(in: 0.3...0.7))
             players.append(Player(number: number, team: team, position: pos))
         } label: {
-            ZStack {
-                Image(systemName: "plus")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundColor(.white)
-                    .frame(width: 40, height: 40)
-                    .background(team == .home ? Color.blue : Color.red)
-                    .cornerRadius(8)
-            }
+            Image(systemName: "plus")
+                .font(.system(size: size * 0.35, weight: .bold))
+                .foregroundColor(.white)
+                .frame(width: size, height: size)
+                .background(team == .home ? Color.blue : Color.red)
+                .cornerRadius(size * 0.2)
         }
     }
 
     @ViewBuilder
-    private func drawToolbar(horizontal: Bool) -> some View {
+    private func drawToolbar(horizontal: Bool, btnSize: CGFloat) -> some View {
+        let colorSize = btnSize * 0.58
         let content = Group {
-            modeBtn("hand.draw", mode: .move)
-            modeBtn("pencil.tip", mode: .draw)
-            modeBtn("eraser", mode: .erase)
+            modeBtn("hand.draw", mode: .move, size: btnSize)
+            modeBtn("pencil.tip", mode: .draw, size: btnSize)
+            modeBtn("eraser", mode: .erase, size: btnSize)
 
             if editorMode == .draw {
                 if horizontal {
-                    Divider().frame(height: 26)
+                    Divider().frame(height: btnSize * 0.7)
                 } else {
-                    Divider().frame(width: 28)
+                    Divider().frame(width: btnSize * 0.7)
                 }
 
                 ForEach(LineType.allCases, id: \.self) { type in
                     Button { selectedLineType = type } label: {
                         LinePreview(type: type)
-                            .frame(width: 38, height: 38)
+                            .frame(width: btnSize, height: btnSize)
                             .background(selectedLineType == type ? Color.blue.opacity(0.2) : Color.clear)
                             .overlay(
-                                RoundedRectangle(cornerRadius: 6)
+                                RoundedRectangle(cornerRadius: btnSize * 0.15)
                                     .stroke(selectedLineType == type ? Color.blue : Color.clear, lineWidth: 1.5)
                             )
-                            .cornerRadius(6)
+                            .cornerRadius(btnSize * 0.15)
                     }
                 }
 
                 if horizontal {
-                    Divider().frame(height: 26)
+                    Divider().frame(height: btnSize * 0.7)
                 } else {
-                    Divider().frame(width: 28)
+                    Divider().frame(width: btnSize * 0.7)
                 }
 
                 ForEach(LineColor.allCases, id: \.self) { lc in
-                    Circle().fill(lc.color).frame(width: 22, height: 22)
+                    Circle().fill(lc.color).frame(width: colorSize, height: colorSize)
                         .overlay(Circle().stroke(selectedLineColor == lc ? .white : .clear, lineWidth: 2))
                         .shadow(color: selectedLineColor == lc ? lc.color.opacity(0.6) : .clear, radius: 3)
                         .onTapGesture { selectedLineColor = lc }
@@ -207,9 +206,9 @@ struct CourtEditorView: View {
         }
 
         if horizontal {
-            HStack(spacing: 6) { content }
+            HStack(spacing: 4) { content }
         } else {
-            VStack(spacing: 6) { content }
+            VStack(spacing: 4) { content }
         }
     }
 
@@ -374,18 +373,18 @@ struct CourtEditorView: View {
 
     // MARK: - UI Components
 
-    private func floatingBtn(_ icon: String, color: Color = .primary, action: @escaping () -> Void) -> some View {
+    private func floatingBtn(_ icon: String, color: Color = .primary, size: CGFloat, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: icon)
-                .font(.system(size: 18, weight: .medium))
+                .font(.system(size: size * 0.45, weight: .medium))
                 .foregroundColor(color)
-                .frame(width: 40, height: 40)
+                .frame(width: size, height: size)
                 .background(.ultraThinMaterial)
-                .cornerRadius(8)
+                .cornerRadius(size * 0.2)
         }
     }
 
-    private var courtModeToggle: some View {
+    private func courtModeToggle(size: CGFloat) -> some View {
         Button {
             let newMode: CourtMode = courtMode == .half ? .full : .half
             courtMode = newMode
@@ -394,22 +393,22 @@ struct CourtEditorView: View {
             lines = []
         } label: {
             Text(courtMode == .half ? "ハーフ" : "フル")
-                .font(.system(size: 12, weight: .semibold))
+                .font(.system(size: size * 0.35, weight: .semibold))
                 .foregroundColor(.primary)
-                .frame(width: 50, height: 40)
+                .frame(width: size * 1.3, height: size)
                 .background(.ultraThinMaterial)
-                .cornerRadius(8)
+                .cornerRadius(size * 0.2)
         }
     }
 
-    private func modeBtn(_ icon: String, mode: EditorMode) -> some View {
+    private func modeBtn(_ icon: String, mode: EditorMode, size: CGFloat) -> some View {
         Button { editorMode = mode } label: {
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .medium))
+                .font(.system(size: size * 0.42, weight: .medium))
                 .foregroundColor(editorMode == mode ? .white : .secondary)
-                .frame(width: 38, height: 38)
+                .frame(width: size, height: size)
                 .background(editorMode == mode ? Color.blue : Color(.systemGray5))
-                .cornerRadius(7)
+                .cornerRadius(size * 0.18)
         }
     }
 
