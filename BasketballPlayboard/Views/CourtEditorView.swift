@@ -23,6 +23,7 @@ struct CourtEditorView: View {
     @State private var ballAttachments: [UUID: (playerID: UUID, hand: HandSide, snapAngle: Double?)] = [:]
     @State private var editingPlayerID: UUID? = nil
     @State private var editingNumber: String = ""
+    @State private var showEditAlert: Bool = false
     @State private var showSaveSheet = false
     @State private var showLoadSheet = false
     @State private var saveName: String = ""
@@ -61,15 +62,13 @@ struct CourtEditorView: View {
                 }
             }
         }
-        .alert("Edit Number", isPresented: Binding(
-            get: { editingPlayerID != nil },
-            set: { if !$0 { editingPlayerID = nil } }
-        )) {
+        .alert("Edit Number", isPresented: $showEditAlert) {
             TextField("Number", text: $editingNumber)
                 .keyboardType(.numberPad)
             Button("OK") { applyNumberEdit() }
             Button("Delete", role: .destructive) {
                 if let pid = editingPlayerID {
+                    ballAttachments = ballAttachments.filter { $0.value.playerID != pid }
                     players.removeAll { $0.id == pid }
                 }
                 editingPlayerID = nil
@@ -419,6 +418,7 @@ struct CourtEditorView: View {
                     .onTapGesture(count: 3) {
                         editingPlayerID = player.id
                         editingNumber = player.number
+                        showEditAlert = true
                     }
                 }
             }
