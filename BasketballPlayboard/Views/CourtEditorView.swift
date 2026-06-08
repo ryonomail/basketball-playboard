@@ -26,9 +26,9 @@ struct CourtEditorView: View {
     @State private var showSaveSheet = false
     @State private var showLoadSheet = false
     @State private var saveName: String = ""
-    @State private var showHomeVision: Bool = true
-    @State private var showAwayVision: Bool = true
-    @State private var showArms: Bool = true
+    @State private var showHomeVision: Bool = false
+    @State private var showAwayVision: Bool = false
+    @State private var showArms: Bool = false
 
     // Recording
     @State private var isRecording = false
