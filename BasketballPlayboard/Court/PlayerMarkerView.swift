@@ -4,6 +4,7 @@ struct PlayerMarkerView: View {
     let player: Player
     let isSelected: Bool
     var scale: CGFloat = 1.0
+    var showArms: Bool = true
 
     private var teamColor: Color {
         player.team == .home ? .blue : .red
@@ -15,10 +16,12 @@ struct PlayerMarkerView: View {
 
     var body: some View {
         ZStack {
-            ArmsShape()
-                .stroke(teamColor, style: StrokeStyle(lineWidth: 5 * scale, lineCap: .round))
-                .frame(width: armsFrame, height: armsFrame)
-                .rotationEffect(.radians(player.facing))
+            if showArms {
+                ArmsShape()
+                    .stroke(teamColor, style: StrokeStyle(lineWidth: 5 * scale, lineCap: .round))
+                    .frame(width: armsFrame, height: armsFrame)
+                    .rotationEffect(.radians(player.facing))
+            }
 
             Circle()
                 .fill(teamColor)
@@ -72,6 +75,7 @@ struct InteractivePlayerView: View {
     let screenPosition: CGPoint
     var scale: CGFloat = 1.0
     var interactive: Bool = true
+    var showArms: Bool = true
     var onMove: ((CGPoint) -> Void)? = nil
     var onRotate: ((Double) -> Void)? = nil
     var onMoveEnd: (() -> Void)? = nil
@@ -83,10 +87,10 @@ struct InteractivePlayerView: View {
     }
 
     private var hitSize: CGFloat { 44 * scale }
-    private var moveThreshold: CGFloat { 16 * scale }
+    private var moveThreshold: CGFloat { 12 * scale }
 
     var body: some View {
-        PlayerMarkerView(player: player, isSelected: isSelected, scale: scale)
+        PlayerMarkerView(player: player, isSelected: isSelected, scale: scale, showArms: showArms)
             .position(screenPosition)
             .contentShape(Circle().size(width: hitSize, height: hitSize)
                 .offset(x: screenPosition.x - hitSize / 2, y: screenPosition.y - hitSize / 2))
