@@ -62,18 +62,31 @@ struct CourtEditorView: View {
                 }
             }
         }
-        .alert("Edit Number", isPresented: $showEditAlert) {
-            TextField("Number", text: $editingNumber)
-                .keyboardType(.numberPad)
-            Button("OK") { applyNumberEdit() }
-            Button("Delete", role: .destructive) {
-                if let pid = editingPlayerID {
-                    ballAttachments = ballAttachments.filter { $0.value.playerID != pid }
-                    players.removeAll { $0.id == pid }
+        .sheet(isPresented: $showEditAlert) {
+            PlayerNumberEditSheet(
+                number: editingNumber,
+                onSave: { newNumber in
+                    let trimmed = newNumber.trimmingCharacters(in: .whitespaces)
+                    if let pid = editingPlayerID, let idx = players.firstIndex(where: { $0.id == pid }), !trimmed.isEmpty {
+                        players[idx].number = trimmed
+                    }
+                    editingPlayerID = nil
+                    showEditAlert = false
+                },
+                onDelete: {
+                    if let pid = editingPlayerID {
+                        ballAttachments = ballAttachments.filter { $0.value.playerID != pid }
+                        players.removeAll { $0.id == pid }
+                    }
+                    editingPlayerID = nil
+                    showEditAlert = false
+                },
+                onCancel: {
+                    editingPlayerID = nil
+                    showEditAlert = false
                 }
-                editingPlayerID = nil
-            }
-            Button("Cancel", role: .cancel) { editingPlayerID = nil }
+            )
+            .presentationDetents([.height(200)])
         }
         .sheet(isPresented: $showSaveSheet) { saveSheet }
         .sheet(isPresented: $showLoadSheet) { loadSheet }
@@ -745,13 +758,6 @@ struct CourtEditorView: View {
         }
     }
 
-    private func applyNumberEdit() {
-        let trimmed = editingNumber.trimmingCharacters(in: .whitespaces)
-        if let pid = editingPlayerID, let idx = players.firstIndex(where: { $0.id == pid }), !trimmed.isEmpty {
-            players[idx].number = trimmed
-        }
-        editingPlayerID = nil
-    }
 
     private func resetBoard() {
         players = Formation.allPlayers(for: courtMode)
@@ -1060,4 +1066,29 @@ struct ShareSheet: UIViewControllerRepresentable {
         UIActivityViewController(activityItems: items, applicationActivities: nil)
     }
     func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
+}
+
+struct PlayerNumberEditSheet: View {
+    @State var number: String
+    var onSave: (String) -> Void
+    var onDelete: () -> Void
+    var onCancel: () -> Void
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Edit Number").font(.headline)
+            TextField("Number", text: $number)
+                .keyboardType(.numberPad)
+                .textFieldStyle(.roundedBorder)
+                .frame(maxWidth: 120)
+                .multilineTextAlignment(.center)
+            HStack(spacing: 16) {
+                Button("Cancel", role: .cancel) { onCancel() }
+                Button("Delete", role: .destructive) { onDelete() }
+                Button("OK") { onSave(number) }
+                    .buttonStyle(.borderedProminent)
+            }
+        }
+        .padding()
+    }
 }
