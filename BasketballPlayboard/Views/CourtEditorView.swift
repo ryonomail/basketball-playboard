@@ -20,7 +20,7 @@ struct CourtEditorView: View {
     @State private var selectedPlayerID: UUID? = nil
     @State private var draggingBallID: UUID? = nil
     enum HandSide { case left, right }
-    @State private var ballAttachments: [UUID: (playerID: UUID, hand: HandSide)] = [:]
+    @State private var ballAttachments: [UUID: (playerID: UUID, hand: HandSide, snapAngle: Double?)] = [:]
     @State private var editingPlayerID: UUID? = nil
     @State private var editingNumber: String = ""
     @State private var showSaveSheet = false
@@ -791,7 +791,7 @@ struct CourtEditorView: View {
                 }
             }
             if let (playerID, hand, _) = closest {
-                ballAttachments[ballID] = (playerID: playerID, hand: hand)
+                ballAttachments[ballID] = (playerID: playerID, hand: hand, snapAngle: nil)
                 guard let snapPlayer = players.first(where: { $0.id == playerID }) else { return }
                 let hp = handPosition(for: snapPlayer, hand: hand, cs: cs, origin: origin, isPortrait: isPortrait)
                 balls[bi].position = hp
@@ -805,24 +805,29 @@ struct CourtEditorView: View {
                 }
             }
             if let (playerID, _) = closest {
-                ballAttachments[ballID] = (playerID: playerID, hand: .right)
                 guard let snapPlayer = players.first(where: { $0.id == playerID }) else { return }
-                let bodyOffset = bodySnapPosition(for: snapPlayer, ballPos: ballPos, cs: cs, origin: origin, isPortrait: isPortrait)
-                balls[bi].position = bodyOffset
+                let angle = calcSnapAngle(for: snapPlayer, ballPos: ballPos, cs: cs, origin: origin, isPortrait: isPortrait)
+                ballAttachments[ballID] = (playerID: playerID, hand: .right, snapAngle: angle)
+                balls[bi].position = bodySnapPositionFromAngle(for: snapPlayer, angle: angle, cs: cs, origin: origin, isPortrait: isPortrait)
             }
         }
     }
 
-    private func bodySnapPosition(for player: Player, ballPos: CGPoint, cs: CGSize, origin: CGPoint, isPortrait: Bool) -> CGPoint {
+    private func calcSnapAngle(for player: Player, ballPos: CGPoint, cs: CGSize, origin: CGPoint, isPortrait: Bool) -> Double {
         let screenCenter = courtToScreen(player.position, cs: cs, origin: origin, isPortrait: isPortrait)
         let screenBall = courtToScreen(ballPos, cs: cs, origin: origin, isPortrait: isPortrait)
         let dx = screenBall.x - screenCenter.x
         let dy = screenBall.y - screenCenter.y
-        let dist = hypot(dx, dy)
+        return atan2(Double(dx), Double(-dy))
+    }
+
+    private func bodySnapPositionFromAngle(for player: Player, angle: Double, cs: CGSize, origin: CGPoint, isPortrait: Bool) -> CGPoint {
+        let screenCenter = courtToScreen(player.position, cs: cs, origin: origin, isPortrait: isPortrait)
         let offset: CGFloat = 34
-        let nx = dist > 1 ? dx / dist : sin(player.facing)
-        let ny = dist > 1 ? dy / dist : -cos(player.facing)
-        let snapScreen = CGPoint(x: screenCenter.x + nx * offset, y: screenCenter.y + ny * offset)
+        let snapScreen = CGPoint(
+            x: screenCenter.x + offset * CGFloat(sin(angle)),
+            y: screenCenter.y - offset * CGFloat(cos(angle))
+        )
         return screenToCourt(snapScreen, cs: cs, origin: origin, isPortrait: isPortrait)
     }
 
@@ -869,17 +874,21 @@ struct CourtEditorView: View {
             if showArms {
                 balls[bi].position = handPosition(for: pg, hand: .right, cs: cs, origin: origin, isPortrait: isPortrait)
             } else {
-                balls[bi].position = bodySnapPosition(for: pg, ballPos: balls[bi].position, cs: cs, origin: origin, isPortrait: isPortrait)
+                let angle = calcSnapAngle(for: pg, ballPos: balls[bi].position, cs: cs, origin: origin, isPortrait: isPortrait)
+                balls[bi].position = bodySnapPositionFromAngle(for: pg, angle: angle, cs: cs, origin: origin, isPortrait: isPortrait)
+                ballAttachments[balls[bi].id] = (playerID: pg.id, hand: .right, snapAngle: angle)
+                return
             }
-            ballAttachments[balls[bi].id] = (playerID: pg.id, hand: .right)
+            ballAttachments[balls[bi].id] = (playerID: pg.id, hand: .right, snapAngle: nil)
         }
     }
 
-    private func attachedBallPosition(for player: Player, hand: HandSide, ballPos: CGPoint, cs: CGSize, origin: CGPoint, isPortrait: Bool) -> CGPoint {
+    private func attachedBallPosition(for player: Player, hand: HandSide, snapAngle: Double?, cs: CGSize, origin: CGPoint, isPortrait: Bool) -> CGPoint {
         if showArms {
             return handPosition(for: player, hand: hand, cs: cs, origin: origin, isPortrait: isPortrait)
         } else {
-            return bodySnapPosition(for: player, ballPos: ballPos, cs: cs, origin: origin, isPortrait: isPortrait)
+            let angle = snapAngle ?? Double(player.facing)
+            return bodySnapPositionFromAngle(for: player, angle: angle, cs: cs, origin: origin, isPortrait: isPortrait)
         }
     }
 
@@ -887,7 +896,7 @@ struct CourtEditorView: View {
         for (ballID, attachment) in ballAttachments {
             if let bi = balls.firstIndex(where: { $0.id == ballID }),
                let player = players.first(where: { $0.id == attachment.playerID }) {
-                balls[bi].position = attachedBallPosition(for: player, hand: attachment.hand, ballPos: balls[bi].position, cs: cs, origin: origin, isPortrait: isPortrait)
+                balls[bi].position = attachedBallPosition(for: player, hand: attachment.hand, snapAngle: attachment.snapAngle, cs: cs, origin: origin, isPortrait: isPortrait)
             }
         }
     }
@@ -896,7 +905,7 @@ struct CourtEditorView: View {
         for (ballID, attachment) in ballAttachments where attachment.playerID == playerID {
             if let bi = balls.firstIndex(where: { $0.id == ballID }),
                let player = players.first(where: { $0.id == playerID }) {
-                balls[bi].position = attachedBallPosition(for: player, hand: attachment.hand, ballPos: balls[bi].position, cs: cs, origin: origin, isPortrait: isPortrait)
+                balls[bi].position = attachedBallPosition(for: player, hand: attachment.hand, snapAngle: attachment.snapAngle, cs: cs, origin: origin, isPortrait: isPortrait)
             }
         }
     }
