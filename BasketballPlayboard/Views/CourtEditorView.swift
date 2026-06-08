@@ -746,8 +746,9 @@ struct CourtEditorView: View {
     }
 
     private func applyNumberEdit() {
-        if let pid = editingPlayerID, let idx = players.firstIndex(where: { $0.id == pid }) {
-            players[idx].number = editingNumber
+        let trimmed = editingNumber.trimmingCharacters(in: .whitespaces)
+        if let pid = editingPlayerID, let idx = players.firstIndex(where: { $0.id == pid }), !trimmed.isEmpty {
+            players[idx].number = trimmed
         }
         editingPlayerID = nil
     }
