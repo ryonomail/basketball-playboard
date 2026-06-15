@@ -11,7 +11,7 @@ Primary: Sports
 Secondary: Education
 
 ## Price
-¥1,000 (Tier 7)
+¥500 (Tier 3)
 
 ---
 
