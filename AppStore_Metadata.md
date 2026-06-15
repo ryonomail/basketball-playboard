@@ -1,10 +1,10 @@
 # App Store Metadata
 
 ## App Name (30 chars max)
-Basketball Playboard
+Basketball Coach Board
 
 ## Subtitle (30 chars max)
-Basketball Coaching Whiteboard
+Playbook, Record & Share Plays
 
 ## Category
 Primary: Sports
@@ -63,10 +63,10 @@ Initial release.
 ## 🇯🇵 Japanese
 
 ### App Name
-Basketball Playboard
+バスケ作戦ボード - CoachBoard
 
 ### Subtitle (30 chars max)
-バスケ作戦ボード・動画で共有
+戦術プレイブック・録画して共有
 
 ### Description
 タイムアウトのために作られたバスケットボール作戦ボード。
