@@ -1,7 +1,7 @@
 # App Store Metadata
 
 ## App Name (30 chars max)
-Basketball Coach Board
+Basketball Tactics Board
 
 ## Subtitle (30 chars max)
 Playbook, Record & Share Plays
@@ -63,10 +63,10 @@ Initial release.
 ## 🇯🇵 Japanese
 
 ### App Name
-バスケ作戦ボード - CoachBoard
+バスケットボールタクティックスボード
 
 ### Subtitle (30 chars max)
-戦術プレイブック・録画して共有
+作戦ボード・録画して共有
 
 ### Description
 タイムアウトのために作られたバスケットボール作戦ボード。
