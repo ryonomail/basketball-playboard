@@ -1,7 +1,7 @@
 # App Store Metadata
 
 ## App Name (30 chars max)
-Basketball Tactics Board
+Basketball Tactix Board
 
 ## Subtitle (30 chars max)
 Playbook, Record & Share Plays
