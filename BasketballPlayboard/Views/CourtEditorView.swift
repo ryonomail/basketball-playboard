@@ -30,6 +30,7 @@ struct CourtEditorView: View {
     @State private var showHomeVision: Bool = false
     @State private var showAwayVision: Bool = false
     @State private var showArms: Bool = false
+    @AppStorage("playerSizeScale") private var playerSizeScale: Double = 1.0
 
     // Recording
     @State private var isRecording = false
@@ -256,6 +257,24 @@ struct CourtEditorView: View {
                 .background(showAwayVision ? Color.red : Color.red.opacity(0.3))
                 .cornerRadius(size * 0.2)
         }
+
+        // Player size adjustment
+        Button { playerSizeScale = min(1.8, playerSizeScale + 0.15) } label: {
+            Image(systemName: "plus.magnifyingglass")
+                .font(.system(size: size * 0.35, weight: .medium))
+                .foregroundColor(.primary)
+                .frame(width: size, height: size)
+                .background(.ultraThinMaterial)
+                .cornerRadius(size * 0.2)
+        }
+        Button { playerSizeScale = max(0.6, playerSizeScale - 0.15) } label: {
+            Image(systemName: "minus.magnifyingglass")
+                .font(.system(size: size * 0.35, weight: .medium))
+                .foregroundColor(.primary)
+                .frame(width: size, height: size)
+                .background(.ultraThinMaterial)
+                .cornerRadius(size * 0.2)
+        }
     }
 
     private func addPlayerBtn(team: Team, size: CGFloat) -> some View {
@@ -335,7 +354,7 @@ struct CourtEditorView: View {
             )
             // Scale factor: base design is for ~400px court width
             let courtW = isPortrait ? cs.width : (courtMode == .full ? cs.height : cs.width)
-            let uiScale = max(0.6, min(1.5, courtW / 400))
+            let uiScale = max(0.6, min(1.5, courtW / 400)) * CGFloat(playerSizeScale)
 
             ZStack {
                 Rectangle()
