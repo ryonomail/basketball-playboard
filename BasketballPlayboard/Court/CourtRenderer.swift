@@ -70,7 +70,7 @@ struct CourtRenderer: Shape {
             // Half-court line
             addLine(&path, from: pt(0, 14, w, h), to: pt(15, 14, w, h))
             // Half center circle
-            addArc(&path, center: (7.5, 14), radius: 1.8, startDeg: 0, endDeg: 180, dir: 1, w: w, h: h)
+            addArc(&path, center: (7.5, 14), radius: 1.8, startDeg: 0, endDeg: 180, dir: -1, w: w, h: h)
 
         case .full:
             drawHalf(&path, w: w, h: h, baseAlong: 0, dir: 1)
