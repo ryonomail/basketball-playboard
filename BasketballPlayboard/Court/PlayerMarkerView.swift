@@ -38,7 +38,6 @@ struct PlayerMarkerView: View {
         }
         .shadow(color: .black.opacity(0.3), radius: 2 * scale, x: 0, y: 1)
         .frame(width: outerFrame, height: outerFrame)
-        .contentShape(Circle().size(width: outerFrame, height: outerFrame))
     }
 }
 
@@ -126,6 +125,7 @@ struct InteractivePlayerView: View {
                     }
                 : nil
             )
+            .allowsHitTesting(interactive)
     }
 }
 

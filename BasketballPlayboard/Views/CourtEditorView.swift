@@ -429,7 +429,7 @@ struct CourtEditorView: View {
                         isSelected: selectedPlayerID == player.id,
                         screenPosition: screenPos,
                         scale: uiScale,
-                        interactive: playbackPlay == nil,
+                        interactive: playbackPlay == nil && editorMode == .move,
                         showArms: showArms,
                         onMove: { location in
                             selectedPlayerID = player.id
@@ -452,6 +452,7 @@ struct CourtEditorView: View {
                         editingNumber = player.number
                         showEditAlert = true
                     }
+                    .allowsHitTesting(editorMode == .move)
                 }
             }
             .contentShape(Rectangle())
