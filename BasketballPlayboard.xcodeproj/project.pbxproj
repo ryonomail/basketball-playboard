@@ -41,7 +41,7 @@
 		64C84EFE8B5D5170C4B717A7 /* Formation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formation.swift; sourceTree = "<group>"; };
 		71CDF3779A2BBFF53B1DCBFC /* Play.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Play.swift; sourceTree = "<group>"; };
 		814DD588312A3FD0DFF278E6 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
-		9B70D76E3C068E89AFEB2BED /* BasketballPlayboard.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BasketballPlayboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9B70D76E3C068E89AFEB2BED /* BasketballPlayboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BasketballPlayboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC184CED852FDE521668D042 /* VideoExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoExporter.swift; sourceTree = "<group>"; };
 		B8222573139CB6BC54CD9F2E /* PlayStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayStore.swift; sourceTree = "<group>"; };
 		B8758BEF8FBCF342D22D5F6E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -318,13 +318,14 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8GRWN2DGC3;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BasketballPlayboard/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ryonomail.BasketballPlayboard;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
@@ -357,13 +358,14 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8GRWN2DGC3;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BasketballPlayboard/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ryonomail.BasketballPlayboard;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
