@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>バスケ作戦ボードアプリ 徹底比較【2025年最新】おすすめ無料アプリ5選</title>
+<meta name="description" content="バスケットボールの作戦ボード・戦術ボードアプリを徹底比較。無料で使えるおすすめアプリをコーチ目線でランキング。オフライン対応・動画録画・フルコート対応など機能で比較。">
+<meta name="keywords" content="バスケ,作戦ボード,アプリ,無料,比較,戦術,コーチ,ホワイトボード,バスケットボール,タイムアウト">
+<meta property="og:title" content="バスケ作戦ボードアプリ 徹底比較【2025年最新】">
+<meta property="og:description" content="無料で使えるバスケ作戦ボードアプリをコーチ目線で徹底比較。機能・使いやすさ・広告の有無でランキング。">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif; color: #1a1a2e; background: #fff; line-height: 1.8; }
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #fff;
+  padding: 60px 20px 50px;
+  text-align: center;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  backdrop-filter: blur(4px);
+}
+.hero h1 {
+  font-size: clamp(24px, 5vw, 38px);
+  font-weight: 900;
+  line-height: 1.3;
+  margin-bottom: 16px;
+}
+.hero h1 span { color: #e94560; }
+.hero p {
+  font-size: 16px;
+  color: rgba(255,255,255,0.8);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Container */
+.container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+/* Section */
+section { padding: 56px 0; }
+section:nth-child(even) { background: #f8f9fc; }
+.section-title {
+  font-size: clamp(20px, 4vw, 28px);
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.section-sub {
+  text-align: center;
+  color: #666;
+  font-size: 15px;
+  margin-bottom: 40px;
+}
+
+/* Pain Points */
+.pain-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  list-style: none;
+}
+.pain-list li {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  padding: 24px;
+  font-size: 15px;
+}
+.pain-list li strong {
+  display: block;
+  font-size: 17px;
+  margin-bottom: 6px;
+  color: #e94560;
+}
+
+/* Comparison Table */
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+}
+table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+thead {
+  background: #1a1a2e;
+  color: #fff;
+}
+th, td {
+  padding: 14px 12px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+th { font-weight: 700; font-size: 13px; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; font-weight: 500; }
+tbody tr:hover { background: #f0f4ff; }
+
+/* Highlight column */
+.hl { background: rgba(233, 69, 96, 0.06); }
+thead .hl { background: #e94560; }
+.app-name { font-weight: 700; font-size: 15px; }
+
+.check { color: #27ae60; font-weight: 700; }
+.cross { color: #ccc; }
+.partial { color: #e67e22; }
+
+/* Winner badge */
+.winner-row td { border-top: 2px solid #e94560; font-weight: 700; background: rgba(233,69,96,0.04); }
+.winner-row .hl { background: rgba(233,69,96,0.12); }
+
+/* Ranking */
+.rank-list { list-style: none; counter-reset: rank; }
+.rank-item {
+  counter-increment: rank;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 16px;
+  padding: 28px 24px;
+  margin-bottom: 20px;
+  position: relative;
+}
+.rank-item::before {
+  content: counter(rank);
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  background: #1a1a2e;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 15px;
+}
+.rank-item:first-child { border: 2px solid #e94560; box-shadow: 0 4px 20px rgba(233,69,96,0.12); }
+.rank-item:first-child::before { background: #e94560; width: 36px; height: 36px; font-size: 17px; }
+.rank-item h3 { font-size: 19px; margin-bottom: 6px; }
+.rank-item h3 small { font-size: 13px; color: #999; font-weight: 400; margin-left: 8px; }
+.rank-item p { color: #555; font-size: 14px; margin-bottom: 12px; }
+.rank-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.rank-tags span {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: #f0f0f0;
+  color: #555;
+}
+.rank-tags .good { background: #e8f5e9; color: #2e7d32; }
+.rank-tags .bad { background: #fce4ec; color: #c62828; }
+
+/* CTA */
+.cta-section {
+  background: linear-gradient(135deg, #e94560 0%, #c62828 100%);
+  color: #fff;
+  text-align: center;
+  padding: 60px 20px;
+}
+.cta-section h2 {
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+.cta-section p {
+  font-size: 16px;
+  opacity: 0.9;
+  margin-bottom: 28px;
+}
+.cta-btn {
+  display: inline-block;
+  background: #fff;
+  color: #e94560;
+  font-weight: 700;
+  font-size: 17px;
+  padding: 16px 40px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(0,0,0,0.2); }
+.cta-note {
+  margin-top: 12px;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* Screenshots */
+.ss-row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 10px 0;
+  -webkit-overflow-scrolling: touch;
+}
+.ss-row img {
+  height: 360px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  flex-shrink: 0;
+}
+
+/* Features grid */
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+.feat-card {
+  text-align: center;
+  padding: 24px 16px;
+}
+.feat-icon { font-size: 36px; margin-bottom: 10px; }
+.feat-card h4 { font-size: 16px; margin-bottom: 6px; }
+.feat-card p { font-size: 13px; color: #666; }
+
+/* Footer */
+footer {
+  background: #1a1a2e;
+  color: rgba(255,255,255,0.6);
+  text-align: center;
+  padding: 32px 20px;
+  font-size: 13px;
+}
+footer a { color: rgba(255,255,255,0.8); }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .hero { padding: 40px 16px 36px; }
+  section { padding: 40px 0; }
+  .rank-item { padding: 24px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="container">
+    <div class="hero-badge">2025年6月 最新版</div>
+    <h1>バスケ作戦ボードアプリ<br><span>おすすめ比較</span>ランキング</h1>
+    <p>コーチ・選手が本当に使える作戦ボードアプリを、機能・使いやすさ・コストで徹底比較しました。</p>
+  </div>
+</header>
+
+<!-- Pain Points -->
+<section>
+  <div class="container">
+    <h2 class="section-title">こんな悩み、ありませんか？</h2>
+    <p class="section-sub">タイムアウト中に使える作戦ボードアプリが意外と少ない</p>
+    <ul class="pain-list">
+      <li>
+        <strong>起動が遅い・ログイン必要</strong>
+        タイムアウトは60秒。アプリの起動やログインに時間を取られたくない。
+      </li>
+      <li>
+        <strong>広告が邪魔</strong>
+        作戦を描いている最中にバナー広告が表示されて誤タップ。集中できない。
+      </li>
+      <li>
+        <strong>ハーフコートしかない</strong>
+        プレスブレイクやゾーンプレスなど、フルコートの作戦が描けない。
+      </li>
+      <li>
+        <strong>描いた作戦を共有できない</strong>
+        練習前にLINEで戦術を共有したいのに、スクショしか方法がない。
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Comparison Table -->
+<section>
+  <div class="container">
+    <h2 class="section-title">主要アプリ 機能比較表</h2>
+    <p class="section-sub">2025年6月時点のiOS版で比較</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>機能</th>
+            <th class="hl">Basketball<br>Tactix Board</th>
+            <th>バスケ作戦盤A</th>
+            <th>Tactics Board B</th>
+            <th>Coach Clipboard C</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>価格</td>
+            <td class="hl"><strong>完全無料</strong></td>
+            <td>無料（広告あり）</td>
+            <td>無料（課金あり）</td>
+            <td>¥600</td>
+          </tr>
+          <tr>
+            <td>広告</td>
+            <td class="hl"><span class="check">なし</span></td>
+            <td><span class="partial">バナー広告</span></td>
+            <td><span class="partial">動画広告</span></td>
+            <td><span class="check">なし</span></td>
+          </tr>
+          <tr>
+            <td>アカウント登録</td>
+            <td class="hl"><span class="check">不要</span></td>
+            <td><span class="check">不要</span></td>
+            <td><span class="cross">必要</span></td>
+            <td><span class="check">不要</span></td>
+          </tr>
+          <tr>
+            <td>フルコート対応</td>
+            <td class="hl"><span class="check">&#10003;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="check">&#10003;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td>選手の向き表示</td>
+            <td class="hl"><span class="check">&#10003;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td>視野コーン表示</td>
+            <td class="hl"><span class="check">&#10003;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td>プレー動画録画</td>
+            <td class="hl"><span class="check">&#10003;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="partial">有料</span></td>
+            <td><span class="cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td>動画共有（LINE等）</td>
+            <td class="hl"><span class="check">&#10003;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="partial">有料</span></td>
+            <td><span class="cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td>矢印・フリードロー</td>
+            <td class="hl"><span class="check">&#10003;</span></td>
+            <td><span class="check">&#10003;</span></td>
+            <td><span class="check">&#10003;</span></td>
+            <td><span class="check">&#10003;</span></td>
+          </tr>
+          <tr>
+            <td>オフライン動作</td>
+            <td class="hl"><span class="check">&#10003;</span></td>
+            <td><span class="check">&#10003;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="check">&#10003;</span></td>
+          </tr>
+          <tr>
+            <td>iPad対応</td>
+            <td class="hl"><span class="check">&#10003;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="check">&#10003;</span></td>
+            <td><span class="check">&#10003;</span></td>
+          </tr>
+          <tr class="winner-row">
+            <td><strong>総合評価</strong></td>
+            <td class="hl" style="font-size:20px;">&#9733;&#9733;&#9733;&#9733;&#9733;</td>
+            <td>&#9733;&#9733;&#9733;</td>
+            <td>&#9733;&#9733;&#9733;&#9734;</td>
+            <td>&#9733;&#9733;&#9733;&#9734;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Ranking -->
+<section>
+  <div class="container">
+    <h2 class="section-title">おすすめランキング</h2>
+    <p class="section-sub">実際にコーチが使って評価しました</p>
+    <ol class="rank-list">
+      <li class="rank-item">
+        <h3>Basketball Tactix Board <small>ATTRACT合同会社</small></h3>
+        <p>タイムアウトのために作られた、余計な機能がゼロの作戦ボード。起動した瞬間からコートが表示され、アカウント登録もログインも不要。完全無料で広告もなし。フルコート対応、選手の向き・視野表示、プレー動画の録画・共有と、他アプリにない機能が充実。「開いてすぐ使える」を徹底した設計が評価ポイント。</p>
+        <div class="rank-tags">
+          <span class="good">完全無料</span>
+          <span class="good">広告なし</span>
+          <span class="good">フルコート対応</span>
+          <span class="good">動画録画・共有</span>
+          <span class="good">視野コーン表示</span>
+          <span class="good">iPad対応</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <h3>Tactics Board B <small>海外デベロッパー</small></h3>
+        <p>フルコート対応で機能は充実しているが、アカウント登録が必要。動画録画は有料課金（¥480/月）で、無料版では広告が表示される。機能を使い込みたい場合はコストがかかる点がマイナス。</p>
+        <div class="rank-tags">
+          <span class="good">フルコート対応</span>
+          <span class="bad">アカウント必須</span>
+          <span class="bad">動画は有料</span>
+          <span class="bad">広告あり</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <h3>Coach Clipboard C</h3>
+        <p>買い切り¥600で広告なし。シンプルで動作は軽い。ただしハーフコートのみ、動画機能なし、選手の向き表示もなし。最低限の作戦ボードとしては使えるが、機能面で物足りない。</p>
+        <div class="rank-tags">
+          <span class="good">広告なし</span>
+          <span class="good">シンプル</span>
+          <span class="bad">有料</span>
+          <span class="bad">ハーフのみ</span>
+          <span class="bad">動画なし</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <h3>バスケ作戦盤A</h3>
+        <p>無料で使えるが、画面下部にバナー広告が常時表示。ハーフコートのみでiPad非対応。基本的な矢印描画はできるが、機能はかなり限定的。</p>
+        <div class="rank-tags">
+          <span class="good">無料</span>
+          <span class="bad">広告あり</span>
+          <span class="bad">ハーフのみ</span>
+          <span class="bad">iPad非対応</span>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- Features Detail -->
+<section>
+  <div class="container">
+    <h2 class="section-title">1位のアプリの特徴</h2>
+    <p class="section-sub">Basketball Tactix Board が選ばれる理由</p>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon">&#9889;</div>
+        <h4>0秒で使える</h4>
+        <p>アカウント登録もログインも不要。インストールしたら即コートが表示されます。</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">&#127936;</div>
+        <h4>フルコート対応</h4>
+        <p>ハーフコート・フルコートを切り替え。プレスブレイクやゾーンプレスも描けます。</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">&#128064;</div>
+        <h4>視野コーン表示</h4>
+        <p>選手がどこを見ているか可視化。ディフェンスの穴やパスコースが一目瞭然。</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">&#127909;</div>
+        <h4>動画録画・共有</h4>
+        <p>描いたプレーを動画で録画し、LINEやAirDropでチームに共有できます。</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">&#128403;</div>
+        <h4>矢印・フリードロー</h4>
+        <p>直線・点線・波線の矢印とフリーハンドで、あらゆる動きを表現。</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">&#128241;</div>
+        <h4>iPhone & iPad</h4>
+        <p>iPhoneでもiPadでも最適化されたレイアウト。体育館でもミーティングでも。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>無料で今すぐ試してみる</h2>
+  <p>アカウント登録不要・広告なし・完全無料</p>
+  <a href="https://apps.apple.com/app/id6780689526" class="cta-btn">App Storeでダウンロード</a>
+  <p class="cta-note">iOS 17.0以降 / iPhone・iPad対応</p>
+</section>
+
+<!-- FAQ -->
+<section>
+  <div class="container">
+    <h2 class="section-title">よくある質問</h2>
+    <p class="section-sub"></p>
+    <div style="max-width:700px; margin:0 auto;">
+      <details style="margin-bottom:16px; border:1px solid #e8e8e8; border-radius:10px; padding:16px 20px;">
+        <summary style="font-weight:700; cursor:pointer; font-size:15px;">本当に完全無料ですか？</summary>
+        <p style="margin-top:10px; color:#555; font-size:14px;">はい。アプリ内課金も広告も一切ありません。すべての機能が無料で使えます。</p>
+      </details>
+      <details style="margin-bottom:16px; border:1px solid #e8e8e8; border-radius:10px; padding:16px 20px;">
+        <summary style="font-weight:700; cursor:pointer; font-size:15px;">オフラインでも使えますか？</summary>
+        <p style="margin-top:10px; color:#555; font-size:14px;">はい。インターネット接続は一切不要です。体育館や山間部でも問題なく動作します。</p>
+      </details>
+      <details style="margin-bottom:16px; border:1px solid #e8e8e8; border-radius:10px; padding:16px 20px;">
+        <summary style="font-weight:700; cursor:pointer; font-size:15px;">Android版はありますか？</summary>
+        <p style="margin-top:10px; color:#555; font-size:14px;">現在はiOS（iPhone・iPad）のみ対応しています。Android版は検討中です。</p>
+      </details>
+      <details style="margin-bottom:16px; border:1px solid #e8e8e8; border-radius:10px; padding:16px 20px;">
+        <summary style="font-weight:700; cursor:pointer; font-size:15px;">ミニバスでも使えますか？</summary>
+        <p style="margin-top:10px; color:#555; font-size:14px;">はい。コートの規格はFIBA準拠ですが、選手の配置やプレーの説明には問題なくお使いいただけます。</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2025 ATTRACT LLC. | <a href="privacy-policy.html">プライバシーポリシー</a> | <a href="support.html">サポート</a></p>
+</footer>
+
+</body>
+</html>
